@@ -5,7 +5,7 @@ import { Semaforo } from '@/components/semaforo';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/lib/store';
 import { PiscesSymbol } from '@/components/pisces-symbol';
-import { Compass, Sparkles, ChevronRight, Lock, Crown } from 'lucide-react';
+import { Compass, Sparkles, ChevronRight, Crown, Users, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Daily data (would come from backend/algorithm in production)
@@ -164,6 +164,34 @@ export function HomeScreen() {
         <Compass className="w-5 h-5" />
         Tengo una decisión
       </Button>
+
+      {/* Comunidad Card */}
+      <PiscisCard 
+        variant="default" 
+        className="bg-gradient-to-br from-secondary/10 to-primary/10 border-secondary/30 cursor-pointer hover:border-secondary/50 transition-colors"
+        onClick={() => setActiveTab('comunidad')}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center">
+              <Users className="w-5 h-5 text-secondary" />
+            </div>
+            <div>
+              <h3 className="font-medium text-foreground">Comunidad Piscis</h3>
+              <p className="text-xs text-muted-foreground">
+                {user?.enComunidad ? 'Ver conversaciones' : 'Únete al cardumen'}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span>127 activos</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+          </div>
+        </div>
+      </PiscisCard>
 
       {/* Gratis vs Pro */}
       <PiscisCard variant="default" padding="lg">

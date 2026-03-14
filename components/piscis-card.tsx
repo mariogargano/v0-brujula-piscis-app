@@ -7,6 +7,7 @@ interface PiscisCardProps {
   children: React.ReactNode;
   variant?: 'default' | 'glass' | 'glow';
   padding?: 'sm' | 'md' | 'lg';
+  onClick?: () => void;
 }
 
 export function PiscisCard({ 
@@ -14,22 +15,27 @@ export function PiscisCard({
   children, 
   variant = 'default',
   padding = 'md',
+  onClick,
 }: PiscisCardProps) {
+  const Component = onClick ? 'button' : 'div';
+  
   return (
-    <div
+    <Component
+      onClick={onClick}
       className={cn(
-        'rounded-2xl border border-border',
+        'rounded-2xl border border-border w-full text-left',
         variant === 'default' && 'bg-card',
         variant === 'glass' && 'glass',
         variant === 'glow' && 'bg-card shadow-[0_0_30px_rgba(110,231,245,0.1)]',
         padding === 'sm' && 'p-4',
         padding === 'md' && 'p-5',
         padding === 'lg' && 'p-6',
+        onClick && 'cursor-pointer transition-all hover:border-primary/50',
         className
       )}
     >
       {children}
-    </div>
+    </Component>
   );
 }
 

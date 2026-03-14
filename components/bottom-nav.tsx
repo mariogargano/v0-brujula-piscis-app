@@ -5,16 +5,16 @@ import { useAppStore } from '@/lib/store';
 import { 
   Sun, 
   Compass, 
+  Users,
   Sparkles, 
-  BarChart3, 
   User 
 } from 'lucide-react';
 
 const TABS = [
   { id: 'hoy', label: 'Hoy', icon: Sun },
   { id: 'decidir', label: 'Decidir', icon: Compass },
+  { id: 'comunidad', label: 'Comunidad', icon: Users },
   { id: 'rituales', label: 'Rituales', icon: Sparkles },
-  { id: 'reportes', label: 'Reportes', icon: BarChart3 },
   { id: 'perfil', label: 'Perfil', icon: User },
 ];
 
@@ -33,7 +33,7 @@ export function BottomNav() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                'flex flex-col items-center justify-center gap-1 py-2 px-3 min-w-[64px] min-h-[48px]',
+                'flex flex-col items-center justify-center gap-1 py-2 px-2 min-w-[52px] min-h-[48px]',
                 'transition-all duration-200',
                 isActive 
                   ? 'text-primary' 
@@ -47,13 +47,13 @@ export function BottomNav() {
                 )} 
               />
               <span className={cn(
-                'text-xs font-medium',
+                'text-[10px] font-medium leading-tight',
                 isActive && 'text-primary'
               )}>
                 {tab.label}
               </span>
               {isActive && (
-                <div className="absolute -top-0.5 w-8 h-0.5 bg-primary rounded-full" />
+                <div className="absolute -top-0.5 w-6 h-0.5 bg-primary rounded-full" />
               )}
             </button>
           );

@@ -17,7 +17,9 @@ import {
   HelpCircle, 
   Trash2,
   Settings,
-  Check
+  Check,
+  BarChart3,
+  Lock,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -137,6 +139,20 @@ export function ProfileScreen() {
       {/* Settings List */}
       <div className="space-y-2">
         <SettingsItem 
+          icon={BarChart3}
+          label="Mis Reportes"
+          sublabel={isPro ? "Ver reportes semanales" : "Pro - Desbloquear reportes"}
+          locked={!isPro}
+          onClick={() => {
+            if (isPro) {
+              // Would navigate to reports
+            } else {
+              handleUpgrade();
+            }
+          }}
+        />
+        
+        <SettingsItem 
           icon={Settings}
           label="Preferencias"
           sublabel={`${user?.tono === 'suave' ? 'Tono suave' : 'Tono directo'} | ${OBJECTIVES_LABELS[user?.objetivoPrincipal || 'amor']}`}
@@ -225,16 +241,18 @@ export function ProfileScreen() {
   );
 }
 
-function SettingsItem({ 
-  icon: Icon, 
-  label, 
-  sublabel, 
-  onClick 
-}: { 
-  icon: typeof Settings; 
-  label: string; 
+function SettingsItem({
+  icon: Icon,
+  label,
+  sublabel,
+  onClick,
+  locked,
+}: {
+  icon: typeof Settings;
+  label: string;
   sublabel: string;
   onClick: () => void;
+  locked?: boolean;
 }) {
   return (
     <button onClick={onClick} className="w-full text-left">
@@ -244,7 +262,10 @@ function SettingsItem({
             <Icon className="w-5 h-5 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
-            <div className="font-medium text-foreground">{label}</div>
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-foreground">{label}</span>
+              {locked && <Lock className="w-3 h-3 text-muted-foreground" />}
+            </div>
             <p className="text-sm text-muted-foreground truncate">{sublabel}</p>
           </div>
           <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />

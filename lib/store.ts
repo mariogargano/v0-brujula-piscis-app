@@ -10,8 +10,12 @@ import type {
   Plan,
   Objective,
   GuideTone,
+  PiscesTipo,
+  ChatMessage,
+  CommunityRoom,
+  CommunityMember,
 } from './types';
-import { MOCK_RITUALS, MOCK_WEEKLY_REPORTS, MOCK_DECISIONS } from './mock-data';
+import { MOCK_RITUALS, MOCK_WEEKLY_REPORTS, MOCK_DECISIONS, MOCK_COMMUNITY_ROOMS, MOCK_COMMUNITY_MEMBERS, MOCK_CHAT_MESSAGES } from './mock-data';
 
 interface AppState {
   // User
@@ -50,6 +54,16 @@ interface AppState {
   // Reports
   weeklyReports: WeeklyReport[];
   
+  // Community
+  communityRooms: CommunityRoom[];
+  communityMembers: CommunityMember[];
+  chatMessages: ChatMessage[];
+  activeCommunityRoom: string | null;
+  setActiveCommunityRoom: (roomId: string | null) => void;
+  addChatMessage: (message: ChatMessage) => void;
+  likeChatMessage: (messageId: string) => void;
+  joinCommunity: (nombre: string, piscesTipo: PiscesTipo) => void;
+  
   // Initialize
   initializeApp: () => void;
 }
@@ -64,6 +78,7 @@ const DEFAULT_USER: UserProfile = {
   decisionesUsadasEstaSemana: 0,
   ultimoResetSemanal: new Date().toISOString(),
   onboardingCompleto: false,
+  enComunidad: false,
 };
 
 export const useAppStore = create<AppState>()(
@@ -146,6 +161,30 @@ export const useAppStore = create<AppState>()(
       // Reports
       weeklyReports: MOCK_WEEKLY_REPORTS,
       
+      // Community
+      communityRooms: MOCK_COMMUNITY_ROOMS,
+      communityMembers: MOCK_COMMUNITY_MEMBERS,
+      chatMessages: MOCK_CHAT_MESSAGES,
+      activeCommunityRoom: null,
+      setActiveCommunityRoom: (roomId) => set({ activeCommunityRoom: roomId }),
+      addChatMessage: (message) => set((state) => ({
+        chatMessages: [...state.chatMessages, message],
+      })),
+      likeChatMessage: (messageId) => set((state) => ({
+        chatMessages: state.chatMessages.map((m) =>
+          m.id === messageId ? { ...m, likes: m.likes + 1 } : m
+        ),
+      })),
+      joinCommunity: (nombre, piscesTipo) => set((state) => ({
+        user: state.user ? {
+          ...state.user,
+          nombre,
+          piscesTipo,
+          enComunidad: true,
+          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${nombre}`,
+        } : null,
+      })),
+      
       // Initialize
       initializeApp: () => {
         const state = get();
@@ -165,6 +204,7 @@ export const useAppStore = create<AppState>()(
         decisions: state.decisions,
         favoriteRituals: state.favoriteRituals,
         showOnboarding: state.showOnboarding,
+        chatMessages: state.chatMessages,
       }),
     }
   )
@@ -194,5 +234,6 @@ export function createUserFromOnboarding(data: {
     decisionesUsadasEstaSemana: 0,
     ultimoResetSemanal: new Date().toISOString(),
     onboardingCompleto: true,
+    enComunidad: false,
   };
 }

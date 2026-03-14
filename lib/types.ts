@@ -31,8 +31,12 @@ export type DecisionGoal =
 
 export type TrafficLight = 'verde' | 'amarillo' | 'rojo';
 
+// Community types
+export type PiscesTipo = 'soñador' | 'intuitivo' | 'creativo' | 'empatico';
+
 export interface UserProfile {
   id: string;
+  nombre?: string;
   objetivoPrincipal: Objective;
   tono: GuideTone;
   recordatorioCheckIn: boolean;
@@ -44,6 +48,9 @@ export interface UserProfile {
   decisionesUsadasEstaSemana: number;
   ultimoResetSemanal: string;
   onboardingCompleto: boolean;
+  piscesTipo?: PiscesTipo;
+  enComunidad?: boolean;
+  avatar?: string;
 }
 
 export interface DecisionEntry {
@@ -98,6 +105,36 @@ export interface MonthlyReport {
   recomendacionesMes: string[];
 }
 
+export interface CommunityMember {
+  id: string;
+  nombre: string;
+  avatar: string;
+  piscesTipo: PiscesTipo;
+  miembroDesde: string;
+  enLinea: boolean;
+}
+
+export interface ChatMessage {
+  id: string;
+  autorId: string;
+  autorNombre: string;
+  autorAvatar: string;
+  mensaje: string;
+  timestamp: string;
+  likes: number;
+  esPropio: boolean;
+  roomId: string;
+}
+
+export interface CommunityRoom {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  icono: string;
+  miembrosActivos: number;
+  esPro: boolean;
+}
+
 // Helper type for the decision wizard
 export interface DecisionWizardData {
   categoria?: Objective;
@@ -146,4 +183,18 @@ export const TRAFFIC_LIGHT_CONFIG: Record<TrafficLight, { label: string; color: 
   verde: { label: 'Adelante', color: 'text-success', bgColor: 'bg-success' },
   amarillo: { label: 'Con cuidado', color: 'text-warning', bgColor: 'bg-warning' },
   rojo: { label: 'No hoy', color: 'text-destructive', bgColor: 'bg-destructive' },
+};
+
+export const PISCES_TIPOS_LABELS: Record<PiscesTipo, string> = {
+  soñador: 'Piscis Soñador',
+  intuitivo: 'Piscis Intuitivo',
+  creativo: 'Piscis Creativo',
+  empatico: 'Piscis Empático',
+};
+
+export const PISCES_TIPOS_DESCRIPTIONS: Record<PiscesTipo, string> = {
+  soñador: 'Vives en un mundo de posibilidades infinitas',
+  intuitivo: 'Tu sexto sentido es tu mejor guía',
+  creativo: 'Transformas emociones en arte',
+  empatico: 'Sientes lo que otros sienten',
 };

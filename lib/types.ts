@@ -1,0 +1,149 @@
+// Brújula Piscis - Data Types
+
+export type Plan = 'free' | 'pro_monthly' | 'pro_annual';
+
+export type Objective = 'amor' | 'dinero' | 'bienestar' | 'creatividad';
+
+export type GuideTone = 'suave' | 'directo';
+
+export type Emotion = 
+  | 'ansiedad' 
+  | 'ilusion' 
+  | 'nostalgia' 
+  | 'culpa' 
+  | 'enojo' 
+  | 'confusion' 
+  | 'calma';
+
+export type PersonalTendency = 
+  | 'idealizando' 
+  | 'evitando' 
+  | 'impulsivo' 
+  | 'claro';
+
+export type DecisionGoal = 
+  | 'paz' 
+  | 'respuesta' 
+  | 'cierre' 
+  | 'avanzar' 
+  | 'cuidarme' 
+  | 'proteger';
+
+export type TrafficLight = 'verde' | 'amarillo' | 'rojo';
+
+export interface UserProfile {
+  id: string;
+  objetivoPrincipal: Objective;
+  tono: GuideTone;
+  recordatorioCheckIn: boolean;
+  recordatorioPausa: boolean;
+  fechaNacimiento?: string;
+  horaNacimiento?: string;
+  ciudad?: string;
+  plan: Plan;
+  decisionesUsadasEstaSemana: number;
+  ultimoResetSemanal: string;
+  onboardingCompleto: boolean;
+}
+
+export interface DecisionEntry {
+  id: string;
+  fecha: string;
+  categoria: Objective;
+  texto: string;
+  urgencia: number; // 1-10
+  emocion: Emotion;
+  tendencia: PersonalTendency;
+  objetivo: DecisionGoal;
+  dictamen: string;
+  semaforo: TrafficLight;
+  riesgo: number; // 0-100
+  explicacion: string[];
+  preguntasClaridad: string[];
+  plan3Pasos: string[];
+  plantillaTexto?: string;
+  guardada: boolean;
+  recordatorioFecha?: string;
+}
+
+export interface Ritual {
+  id: string;
+  titulo: string;
+  duracion: string;
+  descripcion: string;
+  beneficio: string;
+  esPro: boolean;
+  tipo: 'audio' | 'texto';
+  contenido: string;
+}
+
+export interface WeeklyReport {
+  id: string;
+  semana: string;
+  decisiones: number;
+  emocionDominante: Emotion | null;
+  urgenciaPromedio: number;
+  mayorRiesgo: string;
+  recomendacionClave: string;
+  accionesSugeridas: string[];
+}
+
+export interface MonthlyReport {
+  id: string;
+  mes: string;
+  totalDecisiones: number;
+  categoriaFrecuente: Objective | null;
+  patronesDetectados: string[];
+  evolucionEmocional: string;
+  recomendacionesMes: string[];
+}
+
+// Helper type for the decision wizard
+export interface DecisionWizardData {
+  categoria?: Objective;
+  texto?: string;
+  urgencia?: number;
+  emocion?: Emotion;
+  tendencia?: PersonalTendency;
+  objetivo?: DecisionGoal;
+}
+
+// Mock data generators
+export const EMOTIONS_LABELS: Record<Emotion, string> = {
+  ansiedad: 'Ansiedad',
+  ilusion: 'Ilusión',
+  nostalgia: 'Nostalgia',
+  culpa: 'Culpa',
+  enojo: 'Enojo',
+  confusion: 'Confusión',
+  calma: 'Calma',
+};
+
+export const TENDENCIES_LABELS: Record<PersonalTendency, string> = {
+  idealizando: 'Estoy idealizando',
+  evitando: 'Estoy evitando',
+  impulsivo: 'Estoy impulsivo/a',
+  claro: 'Estoy claro/a',
+};
+
+export const GOALS_LABELS: Record<DecisionGoal, string> = {
+  paz: 'Paz',
+  respuesta: 'Respuesta',
+  cierre: 'Cierre',
+  avanzar: 'Avanzar',
+  cuidarme: 'Cuidarme',
+  proteger: 'Proteger dinero/tiempo',
+};
+
+export const OBJECTIVES_LABELS: Record<Objective, string> = {
+  amor: 'Amor y relaciones',
+  dinero: 'Dinero y trabajo',
+  bienestar: 'Bienestar emocional',
+  creatividad: 'Creatividad y proyectos',
+};
+
+export const TRAFFIC_LIGHT_CONFIG: Record<TrafficLight, { label: string; color: string; bgColor: string }> = {
+  verde: { label: 'Adelante', color: 'text-success', bgColor: 'bg-success' },
+  amarillo: { label: 'Con cuidado', color: 'text-warning', bgColor: 'bg-warning' },
+  rojo: { label: 'No hoy', color: 'text-destructive', bgColor: 'bg-destructive' },
+};

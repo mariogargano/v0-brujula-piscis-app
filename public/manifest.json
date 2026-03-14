@@ -1,0 +1,22 @@
+{
+  "name": "Brújula Piscis",
+  "short_name": "Brújula Piscis",
+  "description": "Tu coach de decisiones diseñado especialmente para Piscis",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#071822",
+  "theme_color": "#071822",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

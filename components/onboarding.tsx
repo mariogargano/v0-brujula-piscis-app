@@ -9,11 +9,11 @@ import type { Objective, GuideTone, Plan } from '@/lib/types';
 import { PiscesSymbol, StarField } from '@/components/pisces-symbol';
 import { CategoryCard } from '@/components/emotion-chip';
 import { Switch } from '@/components/ui/switch';
-import { Check, ChevronRight, Crown, Infinity, Bell, BarChart3, Sparkles } from 'lucide-react';
+import { ChevronRight, Crown, Infinity, Bell, BarChart3, Sparkles } from 'lucide-react';
 
+// Onboarding solo para Piscis - sin seleccion de signo
 const STEPS = [
   'welcome',
-  'sign',
   'preferences',
   'data',
   'reminders',
@@ -22,16 +22,9 @@ const STEPS = [
 
 type Step = typeof STEPS[number];
 
-const ZODIAC_SIGNS = [
-  'Aries', 'Tauro', 'Géminis', 'Cáncer', 'Leo', 'Virgo',
-  'Libra', 'Escorpio', 'Sagitario', 'Capricornio', 'Acuario', 'Piscis'
-] as const;
-
 export function Onboarding() {
   const { setShowOnboarding, setUser } = useAppStore();
   const [currentStep, setCurrentStep] = useState<Step>('welcome');
-  const [selectedSign, setSelectedSign] = useState<string | null>(null);
-  const [showSignError, setShowSignError] = useState(false);
   
   // Preferences
   const [objetivo, setObjetivo] = useState<Objective>('amor');
@@ -53,15 +46,6 @@ export function Onboarding() {
     const nextIndex = stepIndex + 1;
     if (nextIndex < STEPS.length) {
       setCurrentStep(STEPS[nextIndex]);
-    }
-  };
-
-  const handleSignSelect = (sign: string) => {
-    setSelectedSign(sign);
-    if (sign !== 'Piscis') {
-      setShowSignError(true);
-    } else {
-      setShowSignError(false);
     }
   };
 
@@ -95,15 +79,6 @@ export function Onboarding() {
       <div className="flex-1 overflow-y-auto">
         {currentStep === 'welcome' && (
           <WelcomeStep onNext={nextStep} />
-        )}
-        
-        {currentStep === 'sign' && (
-          <SignStep
-            selectedSign={selectedSign}
-            showError={showSignError}
-            onSelect={handleSignSelect}
-            onNext={nextStep}
-          />
         )}
         
         {currentStep === 'preferences' && (
@@ -154,86 +129,33 @@ function WelcomeStep({ onNext }: { onNext: () => void }) {
       </div>
       
       <h1 className="font-serif text-3xl font-bold text-foreground mb-3">
-        Brújula Piscis
+        Brujula Piscis
       </h1>
       
       <p className="text-xl text-primary mb-2">
         Claridad para decidir
       </p>
       
-      <p className="text-muted-foreground max-w-xs mb-12">
-        Tu coach de decisiones diseñado especialmente para Piscis.
-        Claridad + acción, no predicción absoluta.
+      <p className="text-muted-foreground max-w-xs mb-8">
+        Tu coach de decisiones disenado especialmente para Piscis.
+        Claridad + accion, no prediccion absoluta.
       </p>
+
+      <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 mb-8 max-w-xs">
+        <p className="text-sm text-primary font-medium">
+          Esta app es exclusivamente para Piscis
+        </p>
+        <p className="text-xs text-muted-foreground mt-1">
+          Disenada para entender tu energia unica
+        </p>
+      </div>
       
       <Button 
         size="lg" 
         className="w-full max-w-xs h-14 text-lg"
         onClick={onNext}
       >
-        Comenzar
-        <ChevronRight className="w-5 h-5 ml-1" />
-      </Button>
-    </div>
-  );
-}
-
-function SignStep({ 
-  selectedSign, 
-  showError,
-  onSelect, 
-  onNext 
-}: { 
-  selectedSign: string | null;
-  showError: boolean;
-  onSelect: (sign: string) => void;
-  onNext: () => void;
-}) {
-  return (
-    <div className="px-6 py-8">
-      <h2 className="font-serif text-2xl font-bold text-foreground mb-2 text-center">
-        ¿Cuál es tu signo zodiacal?
-      </h2>
-      <p className="text-muted-foreground text-center mb-8">
-        Brújula Piscis está diseñada exclusivamente para Piscis
-      </p>
-      
-      <div className="grid grid-cols-3 gap-3 max-w-md mx-auto">
-        {ZODIAC_SIGNS.map((sign) => (
-          <button
-            key={sign}
-            onClick={() => onSelect(sign)}
-            className={cn(
-              'py-3 px-2 rounded-xl border text-sm font-medium transition-all min-h-[48px]',
-              selectedSign === sign
-                ? sign === 'Piscis'
-                  ? 'border-primary bg-primary/20 text-primary'
-                  : 'border-destructive/50 bg-destructive/10 text-destructive'
-                : 'border-border bg-muted/30 text-foreground hover:border-primary/50'
-            )}
-          >
-            {sign}
-          </button>
-        ))}
-      </div>
-      
-      {showError && (
-        <div className="mt-6 p-4 rounded-xl bg-muted/30 border border-border text-center">
-          <p className="text-foreground font-medium mb-1">
-            Por ahora, Brújula Piscis es exclusiva para Piscis
-          </p>
-          <p className="text-muted-foreground text-sm">
-            Estamos trabajando en versiones para otros signos. Te avisaremos cuando esté disponible.
-          </p>
-        </div>
-      )}
-      
-      <Button 
-        className="w-full mt-8 h-12"
-        disabled={selectedSign !== 'Piscis'}
-        onClick={onNext}
-      >
-        Continuar
+        Soy Piscis, comenzar
         <ChevronRight className="w-5 h-5 ml-1" />
       </Button>
     </div>
@@ -256,10 +178,10 @@ function PreferencesStep({
   return (
     <div className="px-6 py-8">
       <h2 className="font-serif text-2xl font-bold text-foreground mb-2 text-center">
-        ¿En qué área necesitas más claridad?
+        En que area necesitas mas claridad?
       </h2>
       <p className="text-muted-foreground text-center mb-6">
-        Podemos ajustar esto después
+        Podemos ajustar esto despues
       </p>
       
       <div className="grid grid-cols-2 gap-4 mb-8">
@@ -274,7 +196,7 @@ function PreferencesStep({
       </div>
       
       <h3 className="font-serif text-lg font-semibold text-foreground mb-4 text-center">
-        ¿Cómo prefieres recibir la guía?
+        Como prefieres recibir la guia?
       </h3>
       
       <div className="grid grid-cols-2 gap-4">
@@ -289,7 +211,7 @@ function PreferencesStep({
         >
           <div className="font-semibold text-foreground mb-1">Suave</div>
           <p className="text-sm text-muted-foreground">
-            Empática y gentil
+            Empatica y gentil
           </p>
         </button>
         
@@ -379,7 +301,7 @@ function DataStep({
             type="text"
             value={ciudad}
             onChange={(e) => setCiudad(e.target.value)}
-            placeholder="Ej: Ciudad de México"
+            placeholder="Ej: Ciudad de Mexico"
             className="w-full h-12 px-4 rounded-xl border border-border bg-muted/30 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
           />
         </div>
@@ -433,7 +355,7 @@ function RemindersStep({
           <div>
             <div className="font-medium text-foreground">Check-in diario</div>
             <p className="text-sm text-muted-foreground">
-              Un momento de reflexión cada mañana
+              Un momento de reflexion cada manana
             </p>
           </div>
           <Switch checked={checkIn} onCheckedChange={setCheckIn} />
@@ -534,7 +456,7 @@ function PaywallStep({ onComplete }: { onComplete: (plan: Plan) => void }) {
           className="w-full h-12 text-base font-semibold"
           onClick={() => onComplete(selectedPlan === 'annual' ? 'pro_annual' : 'pro_monthly')}
         >
-          Probar Pro 7 días gratis
+          Probar Pro 7 dias gratis
         </Button>
         
         <Button 

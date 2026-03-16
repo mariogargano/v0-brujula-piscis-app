@@ -165,7 +165,7 @@ export function HomeScreen() {
         Tengo una decisión
       </Button>
 
-      {{/* Mentor Card - Pro Feature */}
+      {/* Mentor Card - Pro Feature */}
       <PiscisCard 
         variant="glow" 
         className="bg-gradient-to-br from-secondary/20 to-primary/10 border-secondary/40 cursor-pointer hover:border-secondary transition-colors"

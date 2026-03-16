@@ -102,18 +102,20 @@ export const useAppStore = create<AppState>()(
         ),
       })),
       
-      // Weekly limit check
+      // Weekly/Monthly limit check
       canMakeDecision: () => {
         const state = get();
         if (!state.user) return false;
-        if (state.user.plan !== 'free') return true;
         
-        // Check if week has reset
+        // Pro users have unlimited
+        if (state.user.plan === 'pro') return true;
+        
+        // Check if month has reset
         const lastReset = new Date(state.user.ultimoResetSemanal);
         const now = new Date();
-        const weekMs = 7 * 24 * 60 * 60 * 1000;
+        const monthMs = 30 * 24 * 60 * 60 * 1000;
         
-        if (now.getTime() - lastReset.getTime() > weekMs) {
+        if (now.getTime() - lastReset.getTime() > monthMs) {
           // Reset the counter
           set((s) => ({
             user: s.user ? {
@@ -125,7 +127,9 @@ export const useAppStore = create<AppState>()(
           return true;
         }
         
-        return state.user.decisionesUsadasEstaSemana < 1;
+        // Set limits based on plan
+        const limit = state.user.plan === 'basico' ? 10 : 1; // basico = 10/month, free = 1/week
+        return state.user.decisionesUsadasEstaSemana < limit;
       },
       
       incrementDecisionCount: () => set((state) => ({

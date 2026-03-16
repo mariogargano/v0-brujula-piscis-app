@@ -30,9 +30,7 @@ export async function createCheckoutSession(productId: string) {
       },
     ],
     mode: 'subscription',
-    subscription_data: product.trialDays ? {
-      trial_period_days: product.trialDays,
-    } : undefined,
+    // No trial days for simplicity
   })
 
   return session.client_secret

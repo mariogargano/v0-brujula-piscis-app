@@ -3,46 +3,45 @@ export interface SubscriptionProduct {
   name: string;
   description: string;
   priceInCents: number;
-  interval: 'month' | 'year';
+  interval: 'month';
   features: string[];
   popular?: boolean;
-  trialDays?: number;
+  planType: 'basico' | 'pro';
 }
 
 // Precios en centavos MXN
 export const SUBSCRIPTION_PRODUCTS: SubscriptionProduct[] = [
   {
-    id: 'brujula-pro-monthly',
-    name: 'Brújula Pro Mensual',
-    description: 'Acceso completo a Brújula Piscis por un mes',
-    priceInCents: 9900, // $99 MXN
+    id: 'brujula-basico',
+    name: 'Brújula Básico',
+    description: 'Para Piscis que quieren empezar a decidir mejor',
+    priceInCents: 7900, // $79 MXN/mes
     interval: 'month',
+    planType: 'basico',
     features: [
-      'Decisiones ilimitadas',
-      'Recordatorios personalizados',
-      'Reportes semanales',
-      'Todos los rituales',
-      'Acceso a comunidad completa',
-      'Historial ilimitado',
+      '10 decisiones al mes',
+      '5 rituales desbloqueados',
+      'Acceso a la comunidad Piscis',
+      'Historial de decisiones',
     ],
   },
   {
-    id: 'brujula-pro-annual',
-    name: 'Brújula Pro Anual',
-    description: 'Acceso completo a Brújula Piscis por un año',
-    priceInCents: 70800, // $708 MXN/año = $59/mes
-    interval: 'year',
+    id: 'brujula-pro',
+    name: 'Brújula Pro',
+    description: 'Experiencia completa con Mentor Espiritual',
+    priceInCents: 14900, // $149 MXN/mes
+    interval: 'month',
+    planType: 'pro',
+    popular: true,
     features: [
       'Decisiones ilimitadas',
-      'Recordatorios personalizados', 
-      'Reportes semanales y mensuales',
       'Todos los rituales',
-      'Acceso a comunidad completa',
-      'Historial ilimitado',
-      '40% de descuento vs mensual',
+      'Chat con Mentor Espiritual',
+      'Kabbalah, Tarot, Astrología y más',
+      'Reportes semanales y mensuales',
+      'Comunidad completa',
+      'Recordatorios personalizados',
     ],
-    popular: true,
-    trialDays: 7,
   },
 ];
 

@@ -9,23 +9,53 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Infinity, Bell, BarChart3, Crown, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { 
+  Sparkles, 
+  Crown, 
+  ArrowLeft, 
+  CheckCircle2,
+  Check,
+  Users,
+  MessageCircle,
+  BarChart3,
+  Compass,
+  BookOpen
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { StripeCheckout } from './stripe-checkout';
 
-const FEATURES = [
-  { icon: Infinity, label: 'Decisiones ilimitadas' },
-  { icon: Bell, label: 'Recordatorios personalizados' },
-  { icon: BarChart3, label: 'Reportes semanales' },
-  { icon: Sparkles, label: 'Todos los rituales' },
-];
-
 type PaywallStep = 'plans' | 'checkout' | 'success';
+type SelectedPlan = 'basico' | 'pro';
+
+const PLAN_BASICO = {
+  id: 'brujula-basico',
+  name: 'Basico',
+  price: 79,
+  features: [
+    { icon: Compass, label: '10 decisiones al mes' },
+    { icon: BookOpen, label: '5 rituales desbloqueados' },
+    { icon: Users, label: 'Acceso a la comunidad' },
+  ],
+};
+
+const PLAN_PRO = {
+  id: 'brujula-pro',
+  name: 'Pro',
+  price: 149,
+  features: [
+    { icon: Compass, label: 'Decisiones ilimitadas' },
+    { icon: Sparkles, label: 'Todos los rituales' },
+    { icon: MessageCircle, label: 'Chat con Mentor Espiritual' },
+    { icon: BookOpen, label: 'Kabbalah, Tarot, Astrologia y mas' },
+    { icon: BarChart3, label: 'Reportes semanales y mensuales' },
+    { icon: Users, label: 'Comunidad completa' },
+  ],
+};
 
 export function PaywallModal() {
   const { showPaywall, setShowPaywall, paywallContext, updateUser } = useAppStore();
-  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
+  const [selectedPlan, setSelectedPlan] = useState<SelectedPlan>('pro');
   const [step, setStep] = useState<PaywallStep>('plans');
 
   const handleProceedToCheckout = () => {
@@ -33,24 +63,20 @@ export function PaywallModal() {
   };
 
   const handlePaymentComplete = () => {
-    const plan = selectedPlan === 'annual' ? 'pro_annual' : 'pro_monthly';
-    updateUser({ plan });
+    updateUser({ plan: selectedPlan });
     setStep('success');
   };
 
   const handleClose = () => {
     setShowPaywall(false);
-    // Reset to plans step after a delay
     setTimeout(() => setStep('plans'), 300);
   };
 
-  const handleContinueFree = () => {
-    handleClose();
+  const getProductId = () => {
+    return selectedPlan === 'pro' ? 'brujula-pro' : 'brujula-basico';
   };
 
-  const getProductId = () => {
-    return selectedPlan === 'annual' ? 'brujula-pro-annual' : 'brujula-pro-monthly';
-  };
+  const currentPlanData = selectedPlan === 'pro' ? PLAN_PRO : PLAN_BASICO;
 
   return (
     <Dialog open={showPaywall} onOpenChange={(open) => {
@@ -63,84 +89,102 @@ export function PaywallModal() {
         {step === 'plans' && (
           <>
             <DialogHeader className="text-center space-y-2">
-              <div className="mx-auto w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mb-2">
-                <Crown className="w-8 h-8 text-primary" />
+              <div className="mx-auto w-16 h-16 rounded-full bg-secondary/20 flex items-center justify-center mb-2">
+                <Crown className="w-8 h-8 text-secondary" />
               </div>
-              <DialogTitle className="font-serif text-2xl">
-                Tu claridad no debería esperar
+              <DialogTitle className="font-serif text-2xl text-foreground">
+                Elige tu plan Piscis
               </DialogTitle>
               <DialogDescription className="text-muted-foreground">
-                {paywallContext || 'Desbloquea todo el poder de Brújula Piscis'}
+                {paywallContext || 'Desbloquea todo el poder de Brujula Piscis'}
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 mt-4">
-              {/* Features */}
-              <div className="space-y-3">
-                {FEATURES.map((feature) => (
-                  <div key={feature.label} className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                      <feature.icon className="w-4 h-4 text-primary" />
+              {/* Plan Basico */}
+              <button
+                onClick={() => setSelectedPlan('basico')}
+                className={cn(
+                  'w-full p-4 rounded-xl border text-left transition-all',
+                  selectedPlan === 'basico'
+                    ? 'border-primary bg-primary/10'
+                    : 'border-border bg-muted/30 hover:border-primary/50'
+                )}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <div className="font-semibold text-foreground text-lg">Basico</div>
+                    <div className="text-muted-foreground text-sm">Para empezar tu camino</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-foreground">$79</div>
+                    <div className="text-xs text-muted-foreground">MXN/mes</div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  {PLAN_BASICO.features.map((feature) => (
+                    <div key={feature.label} className="flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4 text-primary shrink-0" />
+                      <span className="text-muted-foreground">{feature.label}</span>
                     </div>
-                    <span className="text-foreground">{feature.label}</span>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </button>
 
-              {/* Plan Selection */}
-              <div className="grid grid-cols-2 gap-3 mt-6">
-                <button
-                  onClick={() => setSelectedPlan('monthly')}
-                  className={cn(
-                    'p-4 rounded-xl border text-left transition-all min-h-[120px]',
-                    selectedPlan === 'monthly'
-                      ? 'border-primary bg-primary/10'
-                      : 'border-border bg-muted/30 hover:border-primary/50'
-                  )}
-                >
-                  <div className="font-semibold text-foreground">Mensual</div>
-                  <div className="text-2xl font-bold text-foreground mt-1">$99</div>
-                  <div className="text-xs text-muted-foreground">MXN/mes</div>
-                </button>
-                
-                <button
-                  onClick={() => setSelectedPlan('annual')}
-                  className={cn(
-                    'p-4 rounded-xl border text-left transition-all relative min-h-[120px]',
-                    selectedPlan === 'annual'
-                      ? 'border-primary bg-primary/10'
-                      : 'border-border bg-muted/30 hover:border-primary/50'
-                  )}
-                >
-                  <div className="absolute -top-2 right-2 bg-secondary text-secondary-foreground text-xs px-2 py-0.5 rounded-full font-medium">
-                    -40%
+              {/* Plan Pro */}
+              <button
+                onClick={() => setSelectedPlan('pro')}
+                className={cn(
+                  'w-full p-4 rounded-xl border text-left transition-all relative',
+                  selectedPlan === 'pro'
+                    ? 'border-secondary bg-secondary/10'
+                    : 'border-border bg-muted/30 hover:border-secondary/50'
+                )}
+              >
+                <div className="absolute -top-2 right-3 bg-secondary text-secondary-foreground text-xs px-3 py-0.5 rounded-full font-semibold">
+                  Recomendado
+                </div>
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-foreground text-lg">Pro</span>
+                      <Sparkles className="w-4 h-4 text-secondary" />
+                    </div>
+                    <div className="text-muted-foreground text-sm">Experiencia completa</div>
                   </div>
-                  <div className="font-semibold text-foreground">Anual</div>
-                  <div className="text-2xl font-bold text-foreground mt-1">$59</div>
-                  <div className="text-xs text-muted-foreground">MXN/mes</div>
-                  {selectedPlan === 'annual' && (
-                    <div className="text-xs text-primary mt-1">7 días gratis</div>
-                  )}
-                </button>
-              </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-foreground">$149</div>
+                    <div className="text-xs text-muted-foreground">MXN/mes</div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  {PLAN_PRO.features.map((feature) => (
+                    <div key={feature.label} className="flex items-center gap-2 text-sm">
+                      <Check className="w-4 h-4 text-secondary shrink-0" />
+                      <span className="text-muted-foreground">{feature.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </button>
 
-              {/* CTA Buttons */}
-              <div className="space-y-3 pt-2">
-                <Button 
-                  className="w-full h-12 text-base font-semibold"
-                  onClick={handleProceedToCheckout}
-                >
-                  {selectedPlan === 'annual' ? 'Probar Pro 7 días gratis' : 'Comenzar Pro'}
-                </Button>
-                
-                <Button 
-                  variant="ghost" 
-                  className="w-full text-muted-foreground hover:text-foreground"
-                  onClick={handleContinueFree}
-                >
-                  Continuar gratis
-                </Button>
-              </div>
+              {/* CTA Button */}
+              <Button 
+                className={cn(
+                  "w-full h-12 text-base font-semibold",
+                  selectedPlan === 'pro' && "bg-secondary hover:bg-secondary/90"
+                )}
+                onClick={handleProceedToCheckout}
+              >
+                Continuar con {selectedPlan === 'pro' ? 'Pro' : 'Basico'}
+              </Button>
+              
+              <Button 
+                variant="ghost" 
+                className="w-full text-muted-foreground hover:text-foreground"
+                onClick={handleClose}
+              >
+                Continuar gratis
+              </Button>
 
               <p className="text-xs text-center text-muted-foreground">
                 Pago seguro con Stripe. Cancela cuando quieras.
@@ -161,15 +205,12 @@ export function PaywallModal() {
                 >
                   <ArrowLeft className="w-4 h-4" />
                 </Button>
-                <DialogTitle className="font-serif text-xl">
-                  Completar suscripción
+                <DialogTitle className="font-serif text-xl text-foreground">
+                  Completar suscripcion
                 </DialogTitle>
               </div>
               <DialogDescription className="text-muted-foreground text-sm">
-                {selectedPlan === 'annual' 
-                  ? 'Plan Anual - $708 MXN/año (7 días gratis)'
-                  : 'Plan Mensual - $99 MXN/mes'
-                }
+                Plan {currentPlanData.name} - ${currentPlanData.price} MXN/mes
               </DialogDescription>
             </DialogHeader>
 
@@ -187,14 +228,20 @@ export function PaywallModal() {
             <div className="mx-auto w-20 h-20 rounded-full bg-success/20 flex items-center justify-center">
               <CheckCircle2 className="w-10 h-10 text-success" />
             </div>
-            <DialogTitle className="font-serif text-2xl">
-              ¡Bienvenido a Pro!
+            <DialogTitle className="font-serif text-2xl text-foreground">
+              Bienvenido a {selectedPlan === 'pro' ? 'Pro' : 'Basico'}!
             </DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              Tu suscripción está activa. Ahora tienes acceso completo a Brújula Piscis.
+              {selectedPlan === 'pro' 
+                ? 'Tu Mentor Espiritual te espera. Explora todas las filosofias.'
+                : 'Ya tienes acceso a la comunidad y mas decisiones.'
+              }
             </DialogDescription>
             <Button 
-              className="w-full h-12 mt-4"
+              className={cn(
+                "w-full h-12 mt-4",
+                selectedPlan === 'pro' && "bg-secondary hover:bg-secondary/90"
+              )}
               onClick={handleClose}
             >
               Comenzar a explorar

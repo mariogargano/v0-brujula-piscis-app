@@ -10,6 +10,7 @@ import { DecisionScreen } from '@/components/screens/decision-screen';
 import { CommunityScreen } from '@/components/screens/community-screen';
 import { RitualsScreen } from '@/components/screens/rituals-screen';
 import { ProfileScreen } from '@/components/screens/profile-screen';
+import { MentorScreen } from '@/components/screens/mentor-screen';
 import { StarField } from '@/components/pisces-symbol';
 
 export function AppContainer() {
@@ -36,8 +37,8 @@ export function AppContainer() {
       <main className="relative z-10 max-w-lg mx-auto">
         {activeTab === 'hoy' && <HomeScreen />}
         {activeTab === 'decidir' && <DecisionScreen />}
+        {activeTab === 'mentor' && <MentorScreen />}
         {activeTab === 'comunidad' && <CommunityScreen />}
-        {activeTab === 'rituales' && <RitualsScreen />}
         {activeTab === 'perfil' && <ProfileScreen />}
       </main>
       

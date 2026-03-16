@@ -13,8 +13,8 @@ import {
 const TABS = [
   { id: 'hoy', label: 'Hoy', icon: Sun },
   { id: 'decidir', label: 'Decidir', icon: Compass },
+  { id: 'mentor', label: 'Mentor', icon: Sparkles },
   { id: 'comunidad', label: 'Comunidad', icon: Users },
-  { id: 'rituales', label: 'Rituales', icon: Sparkles },
   { id: 'perfil', label: 'Perfil', icon: User },
 ];
 

@@ -1,6 +1,6 @@
 // Brújula Piscis - Data Types
 
-export type Plan = 'free' | 'pro_monthly' | 'pro_annual';
+export type Plan = 'free' | 'basico' | 'pro';
 
 export type Objective = 'amor' | 'dinero' | 'bienestar' | 'creatividad';
 
@@ -197,4 +197,120 @@ export const PISCES_TIPOS_DESCRIPTIONS: Record<PiscesTipo, string> = {
   intuitivo: 'Tu sexto sentido es tu mejor guía',
   creativo: 'Transformas emociones en arte',
   empatico: 'Sientes lo que otros sienten',
+};
+
+// Mentor & Philosophy types
+export type PhilosophyType = 
+  | 'kabbalah' 
+  | 'tarot' 
+  | 'astrologia' 
+  | 'numerologia' 
+  | 'budismo' 
+  | 'estoicismo'
+  | 'jung'
+  | 'mindfulness';
+
+export interface MentorPhilosophy {
+  id: PhilosophyType;
+  nombre: string;
+  descripcion: string;
+  icono: string;
+  esPro: boolean;
+}
+
+export interface MentorMessage {
+  id: string;
+  tipo: 'user' | 'mentor';
+  contenido: string;
+  timestamp: string;
+  filosofia?: PhilosophyType;
+}
+
+export const PHILOSOPHIES: MentorPhilosophy[] = [
+  {
+    id: 'mindfulness',
+    nombre: 'Mindfulness',
+    descripcion: 'Claridad desde la presencia y el momento actual',
+    icono: '🧘',
+    esPro: false,
+  },
+  {
+    id: 'tarot',
+    nombre: 'Tarot Intuitivo',
+    descripcion: 'Arquetipos y símbolos para iluminar tu camino',
+    icono: '🃏',
+    esPro: false,
+  },
+  {
+    id: 'kabbalah',
+    nombre: 'Kabbalah',
+    descripcion: 'Sabiduría mística del árbol de la vida',
+    icono: '✡️',
+    esPro: true,
+  },
+  {
+    id: 'astrologia',
+    nombre: 'Astrología Profunda',
+    descripcion: 'Los astros como guía de tu alma Piscis',
+    icono: '♓',
+    esPro: true,
+  },
+  {
+    id: 'numerologia',
+    nombre: 'Numerología',
+    descripcion: 'Los números revelan patrones ocultos',
+    icono: '🔢',
+    esPro: true,
+  },
+  {
+    id: 'budismo',
+    nombre: 'Budismo Zen',
+    descripcion: 'El camino medio hacia la paz interior',
+    icono: '☸️',
+    esPro: true,
+  },
+  {
+    id: 'estoicismo',
+    nombre: 'Estoicismo',
+    descripcion: 'Sabiduría práctica para decisiones difíciles',
+    icono: '🏛️',
+    esPro: true,
+  },
+  {
+    id: 'jung',
+    nombre: 'Psicología Jungiana',
+    descripcion: 'Arquetipos y el inconsciente colectivo',
+    icono: '🪞',
+    esPro: true,
+  },
+];
+
+export const PLAN_FEATURES = {
+  free: {
+    nombre: 'Gratis',
+    precio: 0,
+    decisiones: 1,
+    rituales: 2,
+    mentor: false,
+    comunidad: false,
+    reportes: false,
+  },
+  basico: {
+    nombre: 'Básico',
+    precio: 79,
+    decisiones: 10,
+    rituales: 5,
+    mentor: false,
+    comunidad: true,
+    reportes: false,
+  },
+  pro: {
+    nombre: 'Pro',
+    precio: 149,
+    decisiones: -1, // ilimitado
+    rituales: -1, // todos
+    mentor: true,
+    comunidad: true,
+    reportes: true,
+  },
 };

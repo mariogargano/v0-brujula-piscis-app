@@ -165,21 +165,48 @@ export function HomeScreen() {
         Tengo una decisión
       </Button>
 
+      {{/* Mentor Card - Pro Feature */}
+      <PiscisCard 
+        variant="glow" 
+        className="bg-gradient-to-br from-secondary/20 to-primary/10 border-secondary/40 cursor-pointer hover:border-secondary transition-colors"
+        onClick={() => setActiveTab('mentor')}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-secondary/30 flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-secondary" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-foreground">Mentor Espiritual</h3>
+                {user?.plan !== 'pro' && (
+                  <span className="text-[10px] bg-secondary/20 text-secondary px-1.5 py-0.5 rounded">PRO</span>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Kabbalah, Tarot, Astrologia y mas
+              </p>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5 text-secondary" />
+        </div>
+      </PiscisCard>
+
       {/* Comunidad Card */}
       <PiscisCard 
         variant="default" 
-        className="bg-gradient-to-br from-secondary/10 to-primary/10 border-secondary/30 cursor-pointer hover:border-secondary/50 transition-colors"
+        className="cursor-pointer hover:border-primary/50 transition-colors"
         onClick={() => setActiveTab('comunidad')}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center">
-              <Users className="w-5 h-5 text-secondary" />
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+              <Users className="w-5 h-5 text-primary" />
             </div>
             <div>
               <h3 className="font-medium text-foreground">Comunidad Piscis</h3>
               <p className="text-xs text-muted-foreground">
-                {user?.enComunidad ? 'Ver conversaciones' : 'Únete al cardumen'}
+                {user?.enComunidad ? 'Ver conversaciones' : 'Unete al cardumen'}
               </p>
             </div>
           </div>
@@ -193,65 +220,71 @@ export function HomeScreen() {
         </div>
       </PiscisCard>
 
-      {/* Gratis vs Pro */}
-      <PiscisCard variant="default" padding="lg">
-        <PiscisCardHeader title="Tu plan" />
-        <div className="mt-4 grid grid-cols-2 gap-4">
-          {/* Free column */}
-          <div className="space-y-3">
-            <div className="text-sm font-medium text-muted-foreground">Gratis</div>
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center gap-2 text-foreground">
-                <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center">
-                  <span className="text-xs text-primary">1</span>
-                </div>
-                decisión/semana
+      {/* Plan actual */}
+      {user?.plan === 'free' && (
+        <PiscisCard variant="default" padding="lg">
+          <PiscisCardHeader title="Mejora tu experiencia" />
+          <div className="mt-4 space-y-3">
+            <div className="p-3 rounded-lg bg-muted/30 border border-border">
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-medium text-foreground">Basico</span>
+                <span className="text-primary font-bold">$79/mes</span>
               </div>
-              <div className="flex items-center gap-2 text-foreground">
-                <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center">
-                  <span className="text-xs text-primary">2</span>
+              <p className="text-xs text-muted-foreground">10 decisiones + Comunidad</p>
+            </div>
+            <div className="p-3 rounded-lg bg-secondary/10 border border-secondary/30">
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-foreground">Pro</span>
+                  <Crown className="w-4 h-4 text-secondary" />
                 </div>
-                rituales
+                <span className="text-secondary font-bold">$149/mes</span>
               </div>
+              <p className="text-xs text-muted-foreground">Ilimitado + Mentor Espiritual + Reportes</p>
             </div>
           </div>
-          
-          {/* Pro column */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-1.5">
-              <span className="text-sm font-medium text-secondary">Pro</span>
-              <Crown className="w-3.5 h-3.5 text-secondary" />
-            </div>
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center gap-2 text-foreground">
-                <Sparkles className="w-4 h-4 text-secondary" />
-                Ilimitado
-              </div>
-              <div className="flex items-center gap-2 text-foreground">
-                <Sparkles className="w-4 h-4 text-secondary" />
-                + Reportes + Todos los rituales
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {!isPro && (
           <Button 
-            variant="outline" 
-            className="w-full mt-4 border-secondary/50 text-secondary hover:bg-secondary/10"
+            className="w-full mt-4 bg-secondary hover:bg-secondary/90"
             onClick={handleUpgradeClick}
           >
-            Desbloquear Pro
+            Ver planes
             <ChevronRight className="w-4 h-4 ml-1" />
           </Button>
-        )}
-        
-        {isPro && (
-          <div className="mt-4 p-3 rounded-lg bg-secondary/10 border border-secondary/30 text-center">
-            <span className="text-secondary font-medium">Eres Pro</span>
+        </PiscisCard>
+      )}
+      
+      {user?.plan === 'basico' && (
+        <PiscisCard variant="default" padding="lg" className="border-primary/30">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-sm text-muted-foreground">Tu plan</span>
+              <h3 className="font-semibold text-foreground">Basico</h3>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="border-secondary/50 text-secondary"
+              onClick={handleUpgradeClick}
+            >
+              Subir a Pro
+            </Button>
           </div>
-        )}
-      </PiscisCard>
+        </PiscisCard>
+      )}
+      
+      {user?.plan === 'pro' && (
+        <PiscisCard variant="glow" padding="lg" className="border-secondary/50">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center">
+              <Crown className="w-5 h-5 text-secondary" />
+            </div>
+            <div>
+              <span className="text-sm text-muted-foreground">Tu plan</span>
+              <h3 className="font-semibold text-secondary">Piscis Pro</h3>
+            </div>
+          </div>
+        </PiscisCard>
+      )}
     </div>
   );
 }

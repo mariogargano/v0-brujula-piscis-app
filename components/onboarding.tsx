@@ -124,16 +124,17 @@ export function Onboarding() {
 function WelcomeStep({ onNext }: { onNext: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-full px-6 py-12 text-center">
-      <div className="animate-float">
-        <PiscesSymbol className="w-24 h-24 mb-8" animated />
+      {/* Logo */}
+      <div className="animate-float mb-6">
+        <img 
+          src="/logo.jpg" 
+          alt="Brujula Piscis" 
+          className="w-40 h-40 object-contain"
+        />
       </div>
       
-      <h1 className="font-serif text-3xl font-bold text-foreground mb-3">
-        Brujula Piscis
-      </h1>
-      
-      <p className="text-xl text-primary mb-2">
-        Claridad para decidir
+      <p className="text-lg text-secondary font-medium mb-2">
+        Guidance & Intuition
       </p>
       
       <p className="text-muted-foreground max-w-xs mb-8">
@@ -141,7 +142,7 @@ function WelcomeStep({ onNext }: { onNext: () => void }) {
         Claridad + accion, no prediccion absoluta.
       </p>
 
-      <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 mb-8 max-w-xs">
+      <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 mb-8 max-w-xs">
         <p className="text-sm text-primary font-medium">
           Esta app es exclusivamente para Piscis
         </p>

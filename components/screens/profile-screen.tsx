@@ -253,12 +253,16 @@ export function ProfileScreen() {
       
       {/* App Info */}
       <div className="mt-8 text-center">
-        <PiscesSymbol className="w-8 h-8 mx-auto mb-2 opacity-30" />
+        <img 
+          src="/logo.jpg" 
+          alt="Brujula Piscis" 
+          className="w-16 h-16 mx-auto mb-2 opacity-60"
+        />
         <p className="text-xs text-muted-foreground">
-          Brújula Piscis v1.0
+          Brujula Piscis v1.0
         </p>
         <p className="text-xs text-muted-foreground mt-1">
-          Hecho con amor para Piscis
+          Guidance & Intuition
         </p>
       </div>
       

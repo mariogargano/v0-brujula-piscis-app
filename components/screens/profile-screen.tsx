@@ -143,12 +143,12 @@ export function ProfileScreen() {
       {/* Share & Invite */}
       <PiscisCard 
         variant="glow" 
-        className="bg-gradient-to-r from-secondary/20 to-primary/20 border-secondary/40"
+        className="bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/30"
         onClick={openShare}
       >
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-secondary/30 flex items-center justify-center">
-            <Gift className="w-6 h-6 text-secondary" />
+          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+            <Gift className="w-6 h-6 text-primary" />
           </div>
           <div className="flex-1">
             <h3 className="font-semibold text-foreground">Invita a otros Piscis</h3>
@@ -156,7 +156,7 @@ export function ProfileScreen() {
               Comparte Brujula Piscis y gana recompensas
             </p>
           </div>
-          <Share2 className="w-5 h-5 text-secondary" />
+          <Share2 className="w-5 h-5 text-primary" />
         </div>
       </PiscisCard>
       

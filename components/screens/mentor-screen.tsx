@@ -142,8 +142,8 @@ export function MentorScreen() {
       <div className="flex-1 overflow-y-auto pb-24">
         <div className="p-6 space-y-6">
           <div className="text-center space-y-2">
-            <div className="mx-auto w-20 h-20 rounded-full bg-secondary/20 flex items-center justify-center mb-4">
-              <Sparkles className="w-10 h-10 text-secondary" />
+            <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+              <Sparkles className="w-10 h-10 text-primary" />
             </div>
             <h1 className="font-serif text-2xl font-bold text-foreground">
               Mentor Espiritual
@@ -154,7 +154,7 @@ export function MentorScreen() {
           </div>
 
           <PiscisCard variant="glow" className="text-center">
-            <Crown className="w-8 h-8 text-secondary mx-auto mb-3" />
+            <Crown className="w-8 h-8 text-primary mx-auto mb-3" />
             <h3 className="font-semibold text-foreground mb-2">
               Exclusivo para Piscis Pro
             </h3>

@@ -436,7 +436,7 @@ function PaywallStep({ onComplete }: { onComplete: (plan: Plan) => void }) {
               : 'border-border bg-muted/30 hover:border-primary/50'
           )}
         >
-          <div className="absolute -top-2 right-2 bg-secondary text-secondary-foreground text-xs px-2 py-0.5 rounded-full font-medium">
+          <div className="absolute -top-2 right-2 bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full font-medium">
             -40%
           </div>
           <div className="font-semibold text-foreground">Anual</div>

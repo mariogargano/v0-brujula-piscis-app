@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAppStore } from '@/lib/store';
 import { PiscisCard } from '@/components/piscis-card';
-import { PiscesSymbol } from '@/components/pisces-symbol';
+import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -42,7 +42,7 @@ function JoinCommunityModal({ onJoin }: { onJoin: (nombre: string, tipo: PiscesT
       {/* Header */}
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
-          <PiscesSymbol size={60} animated />
+          <Logo size="lg" />
         </div>
         <h1 className="font-serif text-2xl text-foreground mb-2">
           Únete al Cardumen

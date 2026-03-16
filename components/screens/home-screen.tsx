@@ -168,19 +168,19 @@ export function HomeScreen() {
       {/* Mentor Card - Pro Feature */}
       <PiscisCard 
         variant="glow" 
-        className="bg-gradient-to-br from-secondary/20 to-primary/10 border-secondary/40 cursor-pointer hover:border-secondary transition-colors"
+        className="bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/30 cursor-pointer hover:border-primary transition-colors"
         onClick={() => setActiveTab('mentor')}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-secondary/30 flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-secondary" />
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-primary" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-foreground">Mentor Espiritual</h3>
                 {user?.plan !== 'pro' && (
-                  <span className="text-[10px] bg-secondary/20 text-secondary px-1.5 py-0.5 rounded">PRO</span>
+                  <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">PRO</span>
                 )}
               </div>
               <p className="text-xs text-muted-foreground">
@@ -188,7 +188,7 @@ export function HomeScreen() {
               </p>
             </div>
           </div>
-          <ChevronRight className="w-5 h-5 text-secondary" />
+          <ChevronRight className="w-5 h-5 text-primary" />
         </div>
       </PiscisCard>
 
@@ -232,19 +232,19 @@ export function HomeScreen() {
               </div>
               <p className="text-xs text-muted-foreground">10 decisiones + Comunidad</p>
             </div>
-            <div className="p-3 rounded-lg bg-secondary/10 border border-secondary/30">
+            <div className="p-3 rounded-lg bg-primary/5 border border-primary/30">
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-foreground">Pro</span>
-                  <Crown className="w-4 h-4 text-secondary" />
+                  <Crown className="w-4 h-4 text-primary" />
                 </div>
-                <span className="text-secondary font-bold">$149/mes</span>
+                <span className="text-primary font-bold">$149/mes</span>
               </div>
               <p className="text-xs text-muted-foreground">Ilimitado + Mentor Espiritual + Reportes</p>
             </div>
           </div>
           <Button 
-            className="w-full mt-4 bg-secondary hover:bg-secondary/90"
+            className="w-full mt-4"
             onClick={handleUpgradeClick}
           >
             Ver planes
@@ -263,7 +263,6 @@ export function HomeScreen() {
             <Button 
               variant="outline" 
               size="sm"
-              className="border-secondary/50 text-secondary"
               onClick={handleUpgradeClick}
             >
               Subir a Pro
@@ -273,14 +272,14 @@ export function HomeScreen() {
       )}
       
       {user?.plan === 'pro' && (
-        <PiscisCard variant="glow" padding="lg" className="border-secondary/50">
+        <PiscisCard variant="glow" padding="lg" className="border-primary/30">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center">
-              <Crown className="w-5 h-5 text-secondary" />
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <Crown className="w-5 h-5 text-primary" />
             </div>
             <div>
               <span className="text-sm text-muted-foreground">Tu plan</span>
-              <h3 className="font-semibold text-secondary">Piscis Pro</h3>
+              <h3 className="font-semibold text-primary">Piscis Pro</h3>
             </div>
           </div>
         </PiscisCard>

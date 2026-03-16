@@ -89,8 +89,8 @@ export function PaywallModal() {
         {step === 'plans' && (
           <>
             <DialogHeader className="text-center space-y-2">
-              <div className="mx-auto w-16 h-16 rounded-full bg-secondary/20 flex items-center justify-center mb-2">
-                <Crown className="w-8 h-8 text-secondary" />
+              <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-2">
+                <Crown className="w-8 h-8 text-primary" />
               </div>
               <DialogTitle className="font-serif text-2xl text-foreground">
                 Elige tu plan Piscis
@@ -137,18 +137,18 @@ export function PaywallModal() {
                 className={cn(
                   'w-full p-4 rounded-xl border text-left transition-all relative',
                   selectedPlan === 'pro'
-                    ? 'border-secondary bg-secondary/10'
-                    : 'border-border bg-muted/30 hover:border-secondary/50'
+                    ? 'border-primary bg-primary/5'
+                    : 'border-border bg-muted/30 hover:border-primary/50'
                 )}
               >
-                <div className="absolute -top-2 right-3 bg-secondary text-secondary-foreground text-xs px-3 py-0.5 rounded-full font-semibold">
+                <div className="absolute -top-2 right-3 bg-primary text-primary-foreground text-xs px-3 py-0.5 rounded-full font-semibold">
                   Recomendado
                 </div>
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-foreground text-lg">Pro</span>
-                      <Sparkles className="w-4 h-4 text-secondary" />
+                      <Sparkles className="w-4 h-4 text-primary" />
                     </div>
                     <div className="text-muted-foreground text-sm">Experiencia completa</div>
                   </div>
@@ -160,7 +160,7 @@ export function PaywallModal() {
                 <div className="space-y-2">
                   {PLAN_PRO.features.map((feature) => (
                     <div key={feature.label} className="flex items-center gap-2 text-sm">
-                      <Check className="w-4 h-4 text-secondary shrink-0" />
+                      <Check className="w-4 h-4 text-primary shrink-0" />
                       <span className="text-muted-foreground">{feature.label}</span>
                     </div>
                   ))}
@@ -169,10 +169,7 @@ export function PaywallModal() {
 
               {/* CTA Button */}
               <Button 
-                className={cn(
-                  "w-full h-12 text-base font-semibold",
-                  selectedPlan === 'pro' && "bg-secondary hover:bg-secondary/90"
-                )}
+                className="w-full h-12 text-base font-semibold"
                 onClick={handleProceedToCheckout}
               >
                 Continuar con {selectedPlan === 'pro' ? 'Pro' : 'Basico'}
@@ -238,10 +235,7 @@ export function PaywallModal() {
               }
             </DialogDescription>
             <Button 
-              className={cn(
-                "w-full h-12 mt-4",
-                selectedPlan === 'pro' && "bg-secondary hover:bg-secondary/90"
-              )}
+              className="w-full h-12 mt-4"
               onClick={handleClose}
             >
               Comenzar a explorar

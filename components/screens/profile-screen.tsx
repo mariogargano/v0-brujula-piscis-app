@@ -4,11 +4,12 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
 import { useAppStore } from '@/lib/store';
-import { PiscisCard, PiscisCardHeader } from '@/components/piscis-card';
+import { PiscisCard } from '@/components/piscis-card';
 import { Logo } from '@/components/logo';
-import { OBJECTIVES_LABELS } from '@/lib/types';
-import type { GuideTone, Objective } from '@/lib/types';
+import { OBJECTIVES_LABELS, PISCES_TIPOS, PISCES_TIPOS_DESCRIPTIONS } from '@/lib/types';
+import type { GuideTone, Objective, PiscesTipo } from '@/lib/types';
 import { 
   Crown, 
   ChevronRight, 
@@ -22,6 +23,11 @@ import {
   Lock,
   Share2,
   Gift,
+  User,
+  Edit3,
+  Calendar,
+  MapPin,
+  Clock,
 } from 'lucide-react';
 import { ShareModal, useShare } from '@/components/share-modal';
 import {
@@ -35,6 +41,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export function ProfileScreen() {
   const { 
@@ -45,24 +57,31 @@ export function ProfileScreen() {
     decisions,
   } = useAppStore();
   
-  const isPro = user?.plan !== 'free';
+  const isPro = user?.plan === 'pro';
+  const isBasico = user?.plan === 'basico';
   const [showPreferences, setShowPreferences] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
   const { isOpen: shareOpen, setIsOpen: setShareOpen, openShare } = useShare();
   
   const handleUpgrade = () => {
-    setPaywallContext('Desbloquea todo el potencial de Brújula Piscis');
+    setPaywallContext('Desbloquea todo el potencial de Brujula Piscis');
     setShowPaywall(true);
   };
   
   const handleResetHistory = () => {
-    // In production, this would clear the decisions
     console.log('Resetting history...');
   };
   
-  const planLabel = user?.plan === 'pro_annual' 
-    ? 'Pro Anual' 
-    : user?.plan === 'pro_monthly' 
-      ? 'Pro Mensual' 
+  const planLabel = user?.plan === 'pro' 
+    ? 'Pro' 
+    : user?.plan === 'basico' 
+      ? 'Basico' 
+      : 'Gratis';
+      
+  const planPrice = user?.plan === 'pro'
+    ? '$149 MXN/mes'
+    : user?.plan === 'basico'
+      ? '$79 MXN/mes'
       : 'Gratis';
 
   if (showPreferences) {
@@ -77,65 +96,115 @@ export function ProfileScreen() {
 
   return (
     <div className="px-4 py-6 pb-24">
-      {/* Header */}
+      {/* Header with Avatar */}
       <div className="flex items-center gap-4 mb-6">
-        <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
-          <PiscesSymbol className="w-8 h-8" />
+        <div className="relative">
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+            {user?.avatar ? (
+              <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
+            ) : (
+              <User className="w-8 h-8 text-primary" />
+            )}
+          </div>
+          <button 
+            onClick={() => setShowEditProfile(true)}
+            className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md"
+          >
+            <Edit3 className="w-3.5 h-3.5" />
+          </button>
         </div>
-        <div>
+        <div className="flex-1">
           <h1 className="font-serif text-xl font-bold text-foreground">
-            Piscis
+            {user?.nombre || 'Piscis'}
           </h1>
+          <p className="text-sm text-muted-foreground">
+            {user?.piscesTipo ? PISCES_TIPOS_DESCRIPTIONS[user.piscesTipo] : 'Tu energia unica'}
+          </p>
           <div className="flex items-center gap-2 mt-1">
             <span className={cn(
-              "text-sm px-2 py-0.5 rounded-full",
+              "text-xs px-2 py-0.5 rounded-full font-medium",
               isPro 
-                ? "bg-secondary/20 text-secondary" 
-                : "bg-muted text-muted-foreground"
+                ? "bg-primary/10 text-primary" 
+                : isBasico
+                  ? "bg-primary/5 text-primary"
+                  : "bg-muted text-muted-foreground"
             )}>
               {planLabel}
             </span>
-            {isPro && <Crown className="w-4 h-4 text-secondary" />}
+            {isPro && <Crown className="w-4 h-4 text-primary" />}
           </div>
         </div>
       </div>
       
+      {/* Stats Row */}
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="bg-card rounded-xl p-3 text-center border border-border">
+          <div className="text-2xl font-bold text-foreground">{decisions.length}</div>
+          <div className="text-xs text-muted-foreground">Decisiones</div>
+        </div>
+        <div className="bg-card rounded-xl p-3 text-center border border-border">
+          <div className="text-2xl font-bold text-foreground">
+            {user?.plan === 'free' ? `${Math.max(0, 1 - (user?.decisionesUsadasEstaSemana || 0))}/1` : 
+             user?.plan === 'basico' ? `${Math.max(0, 10 - (user?.decisionesUsadasEstaSemana || 0))}/10` : 
+             'Ilimitado'}
+          </div>
+          <div className="text-xs text-muted-foreground">
+            {user?.plan === 'pro' ? 'Este mes' : 'Restantes'}
+          </div>
+        </div>
+        <div className="bg-card rounded-xl p-3 text-center border border-border">
+          <div className="text-2xl font-bold text-foreground">
+            {decisions.filter(d => d.accionTomada).length}
+          </div>
+          <div className="text-xs text-muted-foreground">Completadas</div>
+        </div>
+      </div>
+      
       {/* Subscription Card */}
-      {!isPro ? (
-        <PiscisCard className="mb-6 bg-gradient-to-br from-secondary/10 to-primary/10 border-secondary/30">
+      {!isPro && !isBasico ? (
+        <PiscisCard className="mb-6 bg-gradient-to-br from-primary/5 to-secondary/5 border-primary/20">
           <div className="flex items-center gap-4">
-            <Crown className="w-10 h-10 text-secondary shrink-0" />
+            <Crown className="w-10 h-10 text-primary shrink-0" />
             <div className="flex-1">
               <h3 className="font-semibold text-foreground">
-                Desbloquea Pro
+                Desbloquea mas
               </h3>
               <p className="text-sm text-muted-foreground">
-                Decisiones ilimitadas + reportes
+                Decisiones ilimitadas + Mentor Espiritual
               </p>
             </div>
             <Button 
-              size="sm" 
-              className="bg-secondary text-secondary-foreground hover:bg-secondary/90"
+              size="sm"
               onClick={handleUpgrade}
             >
-              Upgrade
+              Ver planes
             </Button>
           </div>
         </PiscisCard>
       ) : (
-        <PiscisCard className="mb-6">
+        <PiscisCard className="mb-6 border-primary/20">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-foreground">
-                Tu suscripción
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-foreground">
+                  Plan {planLabel}
+                </h3>
+                {isPro && <Crown className="w-4 h-4 text-primary" />}
+              </div>
               <p className="text-sm text-muted-foreground mt-0.5">
-                {user?.plan === 'pro_annual' ? '$59 MXN/mes (facturado anual)' : '$99 MXN/mes'}
+                {planPrice}
               </p>
             </div>
-            <Button variant="outline" size="sm">
-              Gestionar
-            </Button>
+            {isBasico && (
+              <Button variant="outline" size="sm" onClick={handleUpgrade}>
+                Subir a Pro
+              </Button>
+            )}
+            {isPro && (
+              <Button variant="outline" size="sm">
+                Gestionar
+              </Button>
+            )}
           </div>
         </PiscisCard>
       )}
@@ -143,7 +212,7 @@ export function ProfileScreen() {
       {/* Share & Invite */}
       <PiscisCard 
         variant="glow" 
-        className="bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/30"
+        className="mb-6 bg-gradient-to-r from-primary/5 to-secondary/5 border-primary/20 cursor-pointer"
         onClick={openShare}
       >
         <div className="flex items-center gap-4">
@@ -153,7 +222,7 @@ export function ProfileScreen() {
           <div className="flex-1">
             <h3 className="font-semibold text-foreground">Invita a otros Piscis</h3>
             <p className="text-sm text-muted-foreground">
-              Comparte Brujula Piscis y gana recompensas
+              Comparte Brujula Piscis
             </p>
           </div>
           <Share2 className="w-5 h-5 text-primary" />
@@ -163,14 +232,19 @@ export function ProfileScreen() {
       {/* Settings List */}
       <div className="space-y-2">
         <SettingsItem 
+          icon={User}
+          label="Editar perfil"
+          sublabel="Nombre, fecha de nacimiento, ciudad"
+          onClick={() => setShowEditProfile(true)}
+        />
+        
+        <SettingsItem 
           icon={BarChart3}
           label="Mis Reportes"
           sublabel={isPro ? "Ver reportes semanales" : "Pro - Desbloquear reportes"}
           locked={!isPro}
           onClick={() => {
-            if (isPro) {
-              // Would navigate to reports
-            } else {
+            if (!isPro) {
               handleUpgrade();
             }
           }}
@@ -193,14 +267,14 @@ export function ProfileScreen() {
         <SettingsItem 
           icon={Shield}
           label="Privacidad"
-          sublabel="Tus datos están seguros"
+          sublabel="Tus datos estan seguros"
           onClick={() => {}}
         />
         
         <SettingsItem 
           icon={HelpCircle}
           label="Soporte"
-          sublabel="¿Necesitas ayuda?"
+          sublabel="Necesitas ayuda?"
           onClick={() => {}}
         />
       </div>
@@ -227,13 +301,13 @@ export function ProfileScreen() {
               </PiscisCard>
             </button>
           </AlertDialogTrigger>
-          <AlertDialogContent className="bg-background border-border">
+          <AlertDialogContent className="bg-card border-border">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-foreground">
-                ¿Restablecer historial?
+                Restablecer historial?
               </AlertDialogTitle>
               <AlertDialogDescription className="text-muted-foreground">
-                Esta acción eliminará todas tus decisiones guardadas. No se puede deshacer.
+                Esta accion eliminara todas tus decisiones guardadas. No se puede deshacer.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -259,8 +333,14 @@ export function ProfileScreen() {
         </p>
       </div>
       
-      {/* Share Modal */}
+      {/* Modals */}
       <ShareModal open={shareOpen} onOpenChange={setShareOpen} />
+      <EditProfileModal 
+        open={showEditProfile} 
+        onOpenChange={setShowEditProfile}
+        user={user}
+        updateUser={updateUser}
+      />
     </div>
   );
 }
@@ -280,7 +360,7 @@ function SettingsItem({
 }) {
   return (
     <button onClick={onClick} className="w-full text-left">
-      <PiscisCard className="hover:border-primary/50 transition-colors" padding="sm">
+      <PiscisCard className="hover:border-primary/30 transition-colors" padding="sm">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
             <Icon className="w-5 h-5 text-primary" />
@@ -296,6 +376,166 @@ function SettingsItem({
         </div>
       </PiscisCard>
     </button>
+  );
+}
+
+function EditProfileModal({
+  open,
+  onOpenChange,
+  user,
+  updateUser,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  user: any;
+  updateUser: (updates: any) => void;
+}) {
+  const [nombre, setNombre] = useState(user?.nombre || '');
+  const [fechaNacimiento, setFechaNacimiento] = useState(user?.fechaNacimiento || '');
+  const [horaNacimiento, setHoraNacimiento] = useState(user?.horaNacimiento || '');
+  const [ciudad, setCiudad] = useState(user?.ciudad || '');
+  const [piscesTipo, setPiscesTipo] = useState<PiscesTipo | undefined>(user?.piscesTipo);
+  const [saved, setSaved] = useState(false);
+  
+  const handleSave = () => {
+    updateUser({
+      nombre: nombre || undefined,
+      fechaNacimiento: fechaNacimiento || undefined,
+      horaNacimiento: horaNacimiento || undefined,
+      ciudad: ciudad || undefined,
+      piscesTipo,
+      avatar: nombre ? `https://api.dicebear.com/7.x/avataaars/svg?seed=${nombre}` : undefined,
+    });
+    setSaved(true);
+    setTimeout(() => {
+      setSaved(false);
+      onOpenChange(false);
+    }, 800);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="bg-card border-border max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-foreground font-serif">Editar perfil</DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-5 py-2">
+          {/* Avatar Preview */}
+          <div className="flex justify-center">
+            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+              {nombre ? (
+                <img 
+                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${nombre}`} 
+                  alt="Avatar preview" 
+                  className="w-full h-full object-cover" 
+                />
+              ) : (
+                <User className="w-10 h-10 text-primary" />
+              )}
+            </div>
+          </div>
+          
+          {/* Nombre */}
+          <div>
+            <label className="text-sm font-medium text-foreground mb-2 block">
+              Tu nombre
+            </label>
+            <Input
+              placeholder="Como te llamas?"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              className="bg-muted/30 border-border"
+            />
+          </div>
+          
+          {/* Tipo de Piscis */}
+          <div>
+            <label className="text-sm font-medium text-foreground mb-2 block">
+              Tipo de Piscis
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {PISCES_TIPOS.map((tipo) => (
+                <button
+                  key={tipo}
+                  onClick={() => setPiscesTipo(tipo)}
+                  className={cn(
+                    'p-3 rounded-xl border text-left transition-all',
+                    piscesTipo === tipo
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border bg-muted/30 hover:border-primary/50'
+                  )}
+                >
+                  <div className="font-medium text-foreground capitalize text-sm">{tipo}</div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {PISCES_TIPOS_DESCRIPTIONS[tipo]}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Fecha de Nacimiento */}
+          <div>
+            <label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
+              <Calendar className="w-4 h-4" />
+              Fecha de nacimiento
+            </label>
+            <Input
+              type="date"
+              value={fechaNacimiento}
+              onChange={(e) => setFechaNacimiento(e.target.value)}
+              className="bg-muted/30 border-border"
+            />
+          </div>
+          
+          {/* Hora de Nacimiento */}
+          <div>
+            <label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              Hora de nacimiento (opcional)
+            </label>
+            <Input
+              type="time"
+              value={horaNacimiento}
+              onChange={(e) => setHoraNacimiento(e.target.value)}
+              className="bg-muted/30 border-border"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Para calculos astrologicos mas precisos
+            </p>
+          </div>
+          
+          {/* Ciudad */}
+          <div>
+            <label className="text-sm font-medium text-foreground mb-2 block flex items-center gap-2">
+              <MapPin className="w-4 h-4" />
+              Ciudad (opcional)
+            </label>
+            <Input
+              placeholder="Ciudad de Mexico, Guadalajara..."
+              value={ciudad}
+              onChange={(e) => setCiudad(e.target.value)}
+              className="bg-muted/30 border-border"
+            />
+          </div>
+        </div>
+        
+        <Button 
+          className="w-full h-12 mt-2"
+          onClick={handleSave}
+        >
+          {saved ? (
+            <>
+              <Check className="w-5 h-5 mr-2" />
+              Guardado
+            </>
+          ) : (
+            'Guardar cambios'
+          )}
+        </Button>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -325,7 +565,7 @@ function PreferencesView({
     setTimeout(() => {
       setSaved(false);
       onBack();
-    }, 1000);
+    }, 800);
   };
 
   return (
@@ -333,9 +573,9 @@ function PreferencesView({
       <div className="flex items-center gap-3 mb-6">
         <button 
           onClick={onBack}
-          className="w-10 h-10 rounded-full bg-muted/30 flex items-center justify-center"
+          className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center hover:bg-muted transition-colors"
         >
-          <span className="text-foreground">&larr;</span>
+          <ChevronRight className="w-5 h-5 text-foreground rotate-180" />
         </button>
         <h1 className="font-serif text-xl font-bold text-foreground">
           Preferencias
@@ -344,7 +584,7 @@ function PreferencesView({
       
       {/* Tono */}
       <div className="mb-6">
-        <h3 className="font-medium text-foreground mb-3">Estilo de guía</h3>
+        <h3 className="font-medium text-foreground mb-3">Estilo de guia</h3>
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={() => setTono('suave')}
@@ -352,12 +592,12 @@ function PreferencesView({
               'p-4 rounded-xl border text-center transition-all',
               tono === 'suave'
                 ? 'border-primary bg-primary/10'
-                : 'border-border bg-muted/30 hover:border-primary/50'
+                : 'border-border bg-card hover:border-primary/50'
             )}
           >
             <div className="font-semibold text-foreground">Suave</div>
             <p className="text-xs text-muted-foreground mt-1">
-              Empática y gentil
+              Empatica y gentil
             </p>
           </button>
           
@@ -367,7 +607,7 @@ function PreferencesView({
               'p-4 rounded-xl border text-center transition-all',
               tono === 'directo'
                 ? 'border-primary bg-primary/10'
-                : 'border-border bg-muted/30 hover:border-primary/50'
+                : 'border-border bg-card hover:border-primary/50'
             )}
           >
             <div className="font-semibold text-foreground">Directo</div>
@@ -380,7 +620,7 @@ function PreferencesView({
       
       {/* Objetivo */}
       <div className="mb-6">
-        <h3 className="font-medium text-foreground mb-3">Área principal</h3>
+        <h3 className="font-medium text-foreground mb-3">Area principal</h3>
         <div className="space-y-2">
           {(['amor', 'dinero', 'bienestar', 'creatividad'] as Objective[]).map((obj) => (
             <button
@@ -390,7 +630,7 @@ function PreferencesView({
                 'w-full p-3 rounded-xl border text-left transition-all flex items-center justify-between',
                 objetivo === obj
                   ? 'border-primary bg-primary/10'
-                  : 'border-border bg-muted/30 hover:border-primary/50'
+                  : 'border-border bg-card hover:border-primary/50'
               )}
             >
               <span className="text-foreground">{OBJECTIVES_LABELS[obj]}</span>
@@ -404,17 +644,17 @@ function PreferencesView({
       <div className="mb-8">
         <h3 className="font-medium text-foreground mb-3">Recordatorios</h3>
         <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 rounded-xl border border-border bg-muted/30">
+          <div className="flex items-center justify-between p-3 rounded-xl border border-border bg-card">
             <div>
               <div className="text-foreground">Check-in diario</div>
               <p className="text-xs text-muted-foreground">
-                Reflexión cada mañana
+                Reflexion cada manana
               </p>
             </div>
             <Switch checked={checkIn} onCheckedChange={setCheckIn} />
           </div>
           
-          <div className="flex items-center justify-between p-3 rounded-xl border border-border bg-muted/30">
+          <div className="flex items-center justify-between p-3 rounded-xl border border-border bg-card">
             <div>
               <div className="text-foreground">Pausa antes de decidir</div>
               <p className="text-xs text-muted-foreground">

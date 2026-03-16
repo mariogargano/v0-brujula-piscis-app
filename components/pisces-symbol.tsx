@@ -57,18 +57,42 @@ export function WaveDecoration({ className }: { className?: string }) {
   );
 }
 
+// Pre-computed star positions to avoid hydration mismatch
+const STAR_POSITIONS = [
+  { left: 15, top: 20, delay: 0.5, duration: 2.5 },
+  { left: 85, top: 15, delay: 1.2, duration: 3.2 },
+  { left: 45, top: 80, delay: 0.8, duration: 2.8 },
+  { left: 70, top: 45, delay: 2.1, duration: 4.1 },
+  { left: 25, top: 65, delay: 1.5, duration: 3.5 },
+  { left: 90, top: 70, delay: 0.3, duration: 2.3 },
+  { left: 10, top: 40, delay: 2.5, duration: 4.5 },
+  { left: 55, top: 10, delay: 1.8, duration: 3.8 },
+  { left: 35, top: 90, delay: 0.7, duration: 2.7 },
+  { left: 80, top: 30, delay: 2.2, duration: 4.2 },
+  { left: 5, top: 85, delay: 1.1, duration: 3.1 },
+  { left: 60, top: 55, delay: 0.4, duration: 2.4 },
+  { left: 40, top: 25, delay: 2.8, duration: 4.8 },
+  { left: 95, top: 50, delay: 1.6, duration: 3.6 },
+  { left: 20, top: 75, delay: 0.9, duration: 2.9 },
+  { left: 75, top: 95, delay: 2.4, duration: 4.4 },
+  { left: 50, top: 35, delay: 1.3, duration: 3.3 },
+  { left: 30, top: 5, delay: 0.6, duration: 2.6 },
+  { left: 65, top: 60, delay: 2.0, duration: 4.0 },
+  { left: 12, top: 50, delay: 1.7, duration: 3.7 },
+];
+
 export function StarField({ className }: { className?: string }) {
   return (
     <div className={cn('absolute inset-0 overflow-hidden pointer-events-none', className)}>
-      {[...Array(20)].map((_, i) => (
+      {STAR_POSITIONS.map((star, i) => (
         <div
           key={i}
           className="absolute w-1 h-1 bg-primary/30 rounded-full animate-pulse"
           style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * 3}s`,
-            animationDuration: `${2 + Math.random() * 3}s`,
+            left: `${star.left}%`,
+            top: `${star.top}%`,
+            animationDelay: `${star.delay}s`,
+            animationDuration: `${star.duration}s`,
           }}
         />
       ))}

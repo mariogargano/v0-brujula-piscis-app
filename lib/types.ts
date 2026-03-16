@@ -185,11 +185,13 @@ export const TRAFFIC_LIGHT_CONFIG: Record<TrafficLight, { label: string; color: 
   rojo: { label: 'No hoy', color: 'text-destructive', bgColor: 'bg-destructive' },
 };
 
+export const PISCES_TIPOS: PiscesTipo[] = ['soñador', 'intuitivo', 'creativo', 'empatico'];
+
 export const PISCES_TIPOS_LABELS: Record<PiscesTipo, string> = {
-  soñador: 'Piscis Soñador',
+  soñador: 'Piscis Sonador',
   intuitivo: 'Piscis Intuitivo',
   creativo: 'Piscis Creativo',
-  empatico: 'Piscis Empático',
+  empatico: 'Piscis Empatico',
 };
 
 export const PISCES_TIPOS_DESCRIPTIONS: Record<PiscesTipo, string> = {

@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useAppStore, createUserFromOnboarding } from '@/lib/store';
 import type { Objective, GuideTone, Plan } from '@/lib/types';
-import { PiscesSymbol, StarField } from '@/components/pisces-symbol';
+import { StarField } from '@/components/pisces-symbol';
+import { Logo } from '@/components/logo';
 import { CategoryCard } from '@/components/emotion-chip';
 import { Switch } from '@/components/ui/switch';
 import { ChevronRight, Crown, Infinity, Bell, BarChart3, Sparkles } from 'lucide-react';
@@ -124,18 +125,10 @@ export function Onboarding() {
 function WelcomeStep({ onNext }: { onNext: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-full px-6 py-12 text-center">
-      {/* Logo */}
-      <div className="animate-float mb-6">
-        <img 
-          src="/logo.jpg" 
-          alt="Brujula Piscis" 
-          className="w-40 h-40 object-contain"
-        />
+      {/* Logo SVG sin fondo */}
+      <div className="animate-float mb-4">
+        <Logo size="xl" showText />
       </div>
-      
-      <p className="text-lg text-secondary font-medium mb-2">
-        Guidance & Intuition
-      </p>
       
       <p className="text-muted-foreground max-w-xs mb-8">
         Tu coach de decisiones disenado especialmente para Piscis.

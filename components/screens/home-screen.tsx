@@ -4,7 +4,7 @@ import { PiscisCard, PiscisCardHeader } from '@/components/piscis-card';
 import { Semaforo } from '@/components/semaforo';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/lib/store';
-import { PiscesSymbol } from '@/components/pisces-symbol';
+import { Logo } from '@/components/logo';
 import { Compass, Sparkles, ChevronRight, Crown, Users, MessageCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -77,11 +77,7 @@ export function HomeScreen() {
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-3">
-          <img 
-            src="/logo.jpg" 
-            alt="Brujula Piscis" 
-            className="w-10 h-10 object-contain"
-          />
+          <Logo size="sm" />
           <div>
             <h1 className="font-serif text-xl font-bold text-foreground">
               Buenos dias, Piscis

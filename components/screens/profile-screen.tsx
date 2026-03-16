@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { useAppStore } from '@/lib/store';
 import { PiscisCard, PiscisCardHeader } from '@/components/piscis-card';
-import { PiscesSymbol } from '@/components/pisces-symbol';
+import { Logo } from '@/components/logo';
 import { OBJECTIVES_LABELS } from '@/lib/types';
 import type { GuideTone, Objective } from '@/lib/types';
 import { 
@@ -252,17 +252,10 @@ export function ProfileScreen() {
       </div>
       
       {/* App Info */}
-      <div className="mt-8 text-center">
-        <img 
-          src="/logo.jpg" 
-          alt="Brujula Piscis" 
-          className="w-16 h-16 mx-auto mb-2 opacity-60"
-        />
-        <p className="text-xs text-muted-foreground">
-          Brujula Piscis v1.0
-        </p>
-        <p className="text-xs text-muted-foreground mt-1">
-          Guidance & Intuition
+      <div className="mt-8 text-center opacity-60">
+        <Logo size="md" />
+        <p className="text-xs text-muted-foreground mt-2">
+          v1.0 - Guidance & Intuition
         </p>
       </div>
       

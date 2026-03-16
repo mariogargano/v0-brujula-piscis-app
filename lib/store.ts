@@ -49,6 +49,8 @@ interface AppState {
   // Rituals
   rituals: Ritual[];
   favoriteRituals: string[];
+  showRituals: boolean;
+  setShowRituals: (show: boolean) => void;
   toggleFavoriteRitual: (id: string) => void;
   
   // Reports
@@ -156,6 +158,8 @@ export const useAppStore = create<AppState>()(
       // Rituals
       rituals: MOCK_RITUALS,
       favoriteRituals: [],
+      showRituals: false,
+      setShowRituals: (show) => set({ showRituals: show }),
       toggleFavoriteRitual: (id) => set((state) => ({
         favoriteRituals: state.favoriteRituals.includes(id)
           ? state.favoriteRituals.filter((r) => r !== id)

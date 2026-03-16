@@ -5,6 +5,7 @@ import { useAppStore } from '@/lib/store';
 import { BottomNav } from '@/components/bottom-nav';
 import { Onboarding } from '@/components/onboarding';
 import { PaywallModal } from '@/components/paywall-modal';
+import { RitualsModal } from '@/components/rituals-modal';
 import { HomeScreen } from '@/components/screens/home-screen';
 import { DecisionScreen } from '@/components/screens/decision-screen';
 import { CommunityScreen } from '@/components/screens/community-screen';
@@ -44,6 +45,7 @@ export function AppContainer() {
       
       <BottomNav />
       <PaywallModal />
+      <RitualsModal />
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { Semaforo } from '@/components/semaforo';
 import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/lib/store';
 import { Logo } from '@/components/logo';
-import { Compass, Sparkles, ChevronRight, Crown, Users, MessageCircle } from 'lucide-react';
+import { Compass, Sparkles, ChevronRight, Crown, Users, MessageCircle, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Daily data (would come from backend/algorithm in production)
@@ -57,7 +57,7 @@ function getDailyAnchor(): string {
 }
 
 export function HomeScreen() {
-  const { user, setActiveTab, setShowPaywall, setPaywallContext } = useAppStore();
+  const { user, setActiveTab, setShowPaywall, setPaywallContext, setShowRituals, rituals } = useAppStore();
   const pulse = getDailyPulse();
   const semaforo = getDailySemaforo();
   const anchor = getDailyAnchor();
@@ -192,6 +192,28 @@ export function HomeScreen() {
         </div>
       </PiscisCard>
 
+      {/* Rituales Card */}
+      <PiscisCard 
+        variant="default" 
+        className="cursor-pointer hover:border-primary/50 transition-colors"
+        onClick={() => setShowRituals(true)}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+              <BookOpen className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-medium text-foreground">Rituales Piscis</h3>
+              <p className="text-xs text-muted-foreground">
+                {rituals.filter(r => !r.esPro).length} gratuitos, {rituals.filter(r => r.esPro).length} Pro
+              </p>
+            </div>
+          </div>
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        </div>
+      </PiscisCard>
+
       {/* Comunidad Card */}
       <PiscisCard 
         variant="default" 
@@ -200,7 +222,7 @@ export function HomeScreen() {
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
               <Users className="w-5 h-5 text-primary" />
             </div>
             <div>

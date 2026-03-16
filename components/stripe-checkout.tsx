@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useMemo, useRef, useEffect } from 'react'
 import {
   EmbeddedCheckout,
   EmbeddedCheckoutProvider,
@@ -18,12 +18,26 @@ interface StripeCheckoutProps {
 
 export function StripeCheckout({ productId, onComplete }: StripeCheckoutProps) {
   const [isLoading, setIsLoading] = useState(true)
+  const onCompleteRef = useRef(onComplete)
+  
+  // Keep the ref updated
+  useEffect(() => {
+    onCompleteRef.current = onComplete
+  }, [onComplete])
 
   const fetchClientSecret = useCallback(async () => {
     const clientSecret = await createCheckoutSession(productId)
     setIsLoading(false)
     return clientSecret
   }, [productId])
+
+  // Memoize options to prevent re-renders
+  const options = useMemo(() => ({
+    fetchClientSecret,
+    onComplete: () => {
+      onCompleteRef.current?.()
+    }
+  }), [fetchClientSecret])
 
   return (
     <div className="w-full min-h-[400px] relative">
@@ -37,12 +51,7 @@ export function StripeCheckout({ productId, onComplete }: StripeCheckoutProps) {
       )}
       <EmbeddedCheckoutProvider
         stripe={stripePromise}
-        options={{ 
-          fetchClientSecret,
-          onComplete: () => {
-            onComplete?.()
-          }
-        }}
+        options={options}
       >
         <EmbeddedCheckout className="w-full" />
       </EmbeddedCheckoutProvider>

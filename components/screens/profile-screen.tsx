@@ -20,7 +20,10 @@ import {
   Check,
   BarChart3,
   Lock,
+  Share2,
+  Gift,
 } from 'lucide-react';
+import { ShareModal, useShare } from '@/components/share-modal';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,6 +47,7 @@ export function ProfileScreen() {
   
   const isPro = user?.plan !== 'free';
   const [showPreferences, setShowPreferences] = useState(false);
+  const { isOpen: shareOpen, setIsOpen: setShareOpen, openShare } = useShare();
   
   const handleUpgrade = () => {
     setPaywallContext('Desbloquea todo el potencial de Brújula Piscis');
@@ -135,6 +139,26 @@ export function ProfileScreen() {
           </div>
         </PiscisCard>
       )}
+      
+      {/* Share & Invite */}
+      <PiscisCard 
+        variant="glow" 
+        className="bg-gradient-to-r from-secondary/20 to-primary/20 border-secondary/40"
+        onClick={openShare}
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-secondary/30 flex items-center justify-center">
+            <Gift className="w-6 h-6 text-secondary" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-foreground">Invita a otros Piscis</h3>
+            <p className="text-sm text-muted-foreground">
+              Comparte Brujula Piscis y gana recompensas
+            </p>
+          </div>
+          <Share2 className="w-5 h-5 text-secondary" />
+        </div>
+      </PiscisCard>
       
       {/* Settings List */}
       <div className="space-y-2">
@@ -237,6 +261,9 @@ export function ProfileScreen() {
           Hecho con amor para Piscis
         </p>
       </div>
+      
+      {/* Share Modal */}
+      <ShareModal open={shareOpen} onOpenChange={setShareOpen} />
     </div>
   );
 }

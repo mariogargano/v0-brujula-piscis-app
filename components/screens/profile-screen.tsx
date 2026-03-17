@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { useAppStore } from '@/lib/store';
 import { PiscisCard } from '@/components/piscis-card';
 import { Logo } from '@/components/logo';
+import { WhatsAppModal } from '@/components/whatsapp-modal';
 import { OBJECTIVES_LABELS, PISCES_TIPOS, PISCES_TIPOS_DESCRIPTIONS } from '@/lib/types';
 import type { GuideTone, Objective, PiscesTipo } from '@/lib/types';
 import { 
@@ -28,6 +29,7 @@ import {
   Calendar,
   MapPin,
   Clock,
+  MessageCircle,
 } from 'lucide-react';
 import { ShareModal, useShare } from '@/components/share-modal';
 import {
@@ -61,6 +63,7 @@ export function ProfileScreen() {
   const isBasico = user?.plan === 'basico';
   const [showPreferences, setShowPreferences] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showWhatsApp, setShowWhatsApp] = useState(false);
   const { isOpen: shareOpen, setIsOpen: setShareOpen, openShare } = useShare();
   
   const handleUpgrade = () => {
@@ -209,6 +212,34 @@ export function ProfileScreen() {
         </PiscisCard>
       )}
       
+      {/* WhatsApp Daily Messages */}
+      <PiscisCard 
+        variant="glow" 
+        className="mb-4 bg-gradient-to-r from-green-500/5 to-green-600/5 border-green-500/20 cursor-pointer"
+        onClick={() => setShowWhatsApp(true)}
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center">
+            <MessageCircle className="w-6 h-6 text-green-600" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-foreground">Mensajes diarios</h3>
+            <p className="text-sm text-muted-foreground">
+              {user?.whatsappNotificaciones 
+                ? `Activo - ${user.horaNotificacion || '09:00'}` 
+                : 'Recibe inspiracion por WhatsApp'}
+            </p>
+          </div>
+          {user?.whatsappNotificaciones ? (
+            <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center">
+              <Check className="w-4 h-4 text-green-600" />
+            </div>
+          ) : (
+            <ChevronRight className="w-5 h-5 text-green-600" />
+          )}
+        </div>
+      </PiscisCard>
+      
       {/* Share & Invite */}
       <PiscisCard 
         variant="glow" 
@@ -335,6 +366,7 @@ export function ProfileScreen() {
       
       {/* Modals */}
       <ShareModal open={shareOpen} onOpenChange={setShareOpen} />
+      <WhatsAppModal open={showWhatsApp} onOpenChange={setShowWhatsApp} />
       <EditProfileModal 
         open={showEditProfile} 
         onOpenChange={setShowEditProfile}

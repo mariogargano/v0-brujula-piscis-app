@@ -51,6 +51,9 @@ export interface UserProfile {
   piscesTipo?: PiscesTipo;
   enComunidad?: boolean;
   avatar?: string;
+  whatsapp?: string;
+  whatsappNotificaciones?: boolean;
+  horaNotificacion?: string; // "09:00" formato 24h
 }
 
 export interface DecisionEntry {

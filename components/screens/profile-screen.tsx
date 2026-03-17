@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-
+import { useAuth } from '@/components/auth-provider';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -65,6 +65,8 @@ export function ProfileScreen() {
     logout,
     resetHistory,
   } = useAppStore();
+  
+  const { signOut: authSignOut } = useAuth();
   
   const isPro = user?.plan === 'pro';
   const isBasico = user?.plan === 'basico';
@@ -342,7 +344,10 @@ export function ProfileScreen() {
             <AlertDialogFooter>
               <AlertDialogCancel className="border-border">Cancelar</AlertDialogCancel>
               <AlertDialogAction
-                onClick={logout}
+                onClick={() => {
+                  logout(); // Clear local state
+                  authSignOut(); // Sign out from Supabase
+                }}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
                 Cerrar sesion

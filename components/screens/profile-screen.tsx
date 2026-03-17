@@ -5,6 +5,13 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { useAppStore } from '@/lib/store';
 import { PiscisCard } from '@/components/piscis-card';
 import { Logo } from '@/components/logo';
@@ -30,6 +37,9 @@ import {
   MapPin,
   Clock,
   MessageCircle,
+  LogOut,
+  Mail,
+  ExternalLink,
 } from 'lucide-react';
 import { ShareModal, useShare } from '@/components/share-modal';
 import {
@@ -57,6 +67,8 @@ export function ProfileScreen() {
     setShowPaywall, 
     setPaywallContext,
     decisions,
+    logout,
+    resetHistory,
   } = useAppStore();
   
   const isPro = user?.plan === 'pro';
@@ -64,6 +76,7 @@ export function ProfileScreen() {
   const [showPreferences, setShowPreferences] = useState(false);
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showWhatsApp, setShowWhatsApp] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
   const { isOpen: shareOpen, setIsOpen: setShareOpen, openShare } = useShare();
   
   const handleUpgrade = () => {
@@ -72,7 +85,7 @@ export function ProfileScreen() {
   };
   
   const handleResetHistory = () => {
-    console.log('Resetting history...');
+    resetHistory();
   };
   
   const planLabel = user?.plan === 'pro' 
@@ -306,8 +319,42 @@ export function ProfileScreen() {
           icon={HelpCircle}
           label="Soporte"
           sublabel="Necesitas ayuda?"
-          onClick={() => {}}
+          onClick={() => setShowSupport(true)}
         />
+        
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <div>
+              <SettingsItem 
+                icon={LogOut}
+                label="Cerrar sesion"
+                sublabel="Salir de tu cuenta"
+                onClick={() => {}}
+                danger
+              />
+            </div>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="bg-card border-border">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="text-foreground">
+                Cerrar sesion?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                Perderas tu progreso y configuraciones guardadas localmente.
+                Tendras que volver a configurar tu perfil.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="border-border">Cancelar</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={logout}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Cerrar sesion
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
       
       {/* Danger Zone */}
@@ -373,7 +420,68 @@ export function ProfileScreen() {
         user={user}
         updateUser={updateUser}
       />
-    </div>
+      
+      {/* Support Modal */}
+      <Dialog open={showSupport} onOpenChange={setShowSupport}>
+        <DialogContent className="max-w-sm bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Centro de Soporte</DialogTitle>
+            <DialogDescription>
+              Estamos aqui para ayudarte
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-3 py-4">
+            <a 
+              href="mailto:soporte@brujulapiscis.com?subject=Ayuda%20con%20Brujula%20Piscis"
+              className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/20 hover:bg-primary/10 transition-colors"
+            >
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Mail className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-foreground">Escribenos un email</p>
+                <p className="text-sm text-muted-foreground">soporte@brujulapiscis.com</p>
+              </div>
+              <ExternalLink className="w-4 h-4 text-muted-foreground" />
+            </a>
+            
+            <a 
+              href="https://wa.me/5215512345678?text=Hola,%20necesito%20ayuda%20con%20Brujula%20Piscis"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 p-3 rounded-lg bg-green-500/5 border border-green-500/20 hover:bg-green-500/10 transition-colors"
+            >
+              <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
+                <MessageCircle className="w-5 h-5 text-green-600" />
+              </div>
+              <div className="flex-1">
+                <p className="font-medium text-foreground">WhatsApp</p>
+                <p className="text-sm text-muted-foreground">Respuesta rapida</p>
+              </div>
+              <ExternalLink className="w-4 h-4 text-muted-foreground" />
+            </a>
+          </div>
+          
+          <div className="pt-4 border-t border-border">
+            <h4 className="text-sm font-medium text-foreground mb-2">Preguntas frecuentes</h4>
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <p>- Como cambio mi plan?</p>
+              <p>- Mis datos estan seguros?</p>
+              <p>- Como funciona el Mentor?</p>
+            </div>
+            <Button 
+              variant="outline" 
+              className="w-full mt-4"
+              onClick={() => setShowSupport(false)}
+            >
+              Cerrar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      </div>
   );
 }
 
@@ -383,28 +491,39 @@ function SettingsItem({
   sublabel,
   onClick,
   locked,
+  danger,
 }: {
   icon: typeof Settings;
   label: string;
   sublabel: string;
   onClick: () => void;
   locked?: boolean;
+  danger?: boolean;
 }) {
   return (
     <button onClick={onClick} className="w-full text-left">
-      <PiscisCard className="hover:border-primary/30 transition-colors" padding="sm">
+      <PiscisCard 
+        className={cn(
+          "transition-colors",
+          danger ? "hover:border-destructive/30" : "hover:border-primary/30"
+        )} 
+        padding="sm"
+      >
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <Icon className="w-5 h-5 text-primary" />
+          <div className={cn(
+            "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+            danger ? "bg-destructive/10" : "bg-primary/10"
+          )}>
+            <Icon className={cn("w-5 h-5", danger ? "text-destructive" : "text-primary")} />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span className="font-medium text-foreground">{label}</span>
+              <span className={cn("font-medium", danger ? "text-destructive" : "text-foreground")}>{label}</span>
               {locked && <Lock className="w-3 h-3 text-muted-foreground" />}
             </div>
-            <p className="text-sm text-muted-foreground truncate">{sublabel}</p>
+            <p className={cn("text-sm truncate", danger ? "text-destructive/70" : "text-muted-foreground")}>{sublabel}</p>
           </div>
-          <ChevronRight className="w-5 h-5 text-muted-foreground shrink-0" />
+          <ChevronRight className={cn("w-5 h-5 shrink-0", danger ? "text-destructive/50" : "text-muted-foreground")} />
         </div>
       </PiscisCard>
     </button>

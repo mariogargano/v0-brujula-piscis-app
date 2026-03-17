@@ -68,6 +68,10 @@ interface AppState {
   
   // Initialize
   initializeApp: () => void;
+  
+  // Logout
+  logout: () => void;
+  resetHistory: () => void;
 }
 
 const DEFAULT_USER: UserProfile = {
@@ -203,6 +207,24 @@ export const useAppStore = create<AppState>()(
             decisions: MOCK_DECISIONS,
           });
         }
+      },
+      
+      // Logout - reset everything
+      logout: () => {
+        set({
+          user: null,
+          decisions: [],
+          favoriteRituals: [],
+          showOnboarding: true,
+          activeTab: 'hoy',
+          chatMessages: [],
+          activeCommunityRoom: null,
+        });
+      },
+      
+      // Reset history only
+      resetHistory: () => {
+        set({ decisions: [] });
       },
     }),
     {

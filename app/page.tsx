@@ -10,13 +10,18 @@ export default function Page() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
+  console.log('[v0] Page: loading:', loading, 'user:', !!user);
+
   useEffect(() => {
+    console.log('[v0] Page useEffect: loading:', loading, 'user:', !!user);
     if (!loading && !user) {
+      console.log('[v0] Page: Redirecting to login');
       router.push('/auth/login');
     }
   }, [user, loading, router]);
 
   if (loading) {
+    console.log('[v0] Page: Showing loading spinner');
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center">
         <Logo size="lg" />

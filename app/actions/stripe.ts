@@ -30,7 +30,17 @@ export async function createCheckoutSession(productId: string) {
       },
     ],
     mode: 'subscription',
-    // No trial days for simplicity
+    // 7 days free trial - card required upfront, auto-charge after trial
+    subscription_data: {
+      trial_period_days: product.trialDays,
+      trial_settings: {
+        end_behavior: {
+          missing_payment_method: 'cancel', // Cancel if no payment method
+        },
+      },
+    },
+    // Require payment method upfront for trial
+    payment_method_collection: 'always',
   })
 
   return session.client_secret

@@ -32,6 +32,7 @@ const PLAN_BASICO = {
   id: 'brujula-basico',
   name: 'Basico',
   price: 79,
+  trialDays: 7,
   features: [
     { icon: Compass, label: '10 decisiones al mes' },
     { icon: BookOpen, label: '5 rituales desbloqueados' },
@@ -43,6 +44,7 @@ const PLAN_PRO = {
   id: 'brujula-pro',
   name: 'Pro',
   price: 149,
+  trialDays: 7,
   features: [
     { icon: Compass, label: 'Decisiones ilimitadas' },
     { icon: Sparkles, label: 'Todos los rituales' },
@@ -117,8 +119,9 @@ export function PaywallModal() {
                     <div className="text-muted-foreground text-sm">Para empezar tu camino</div>
                   </div>
                   <div className="text-right">
+                    <div className="text-xs text-primary font-medium mb-1">7 dias gratis</div>
                     <div className="text-2xl font-bold text-foreground">$79</div>
-                    <div className="text-xs text-muted-foreground">MXN/mes</div>
+                    <div className="text-xs text-muted-foreground">MXN/mes despues</div>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -153,8 +156,9 @@ export function PaywallModal() {
                     <div className="text-muted-foreground text-sm">Experiencia completa</div>
                   </div>
                   <div className="text-right">
+                    <div className="text-xs text-primary font-medium mb-1">7 dias gratis</div>
                     <div className="text-2xl font-bold text-foreground">$149</div>
-                    <div className="text-xs text-muted-foreground">MXN/mes</div>
+                    <div className="text-xs text-muted-foreground">MXN/mes despues</div>
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -172,7 +176,7 @@ export function PaywallModal() {
                 className="w-full h-12 text-base font-semibold"
                 onClick={handleProceedToCheckout}
               >
-                Continuar con {selectedPlan === 'pro' ? 'Pro' : 'Basico'}
+                Empezar 7 dias gratis
               </Button>
               
               <Button 
@@ -184,7 +188,7 @@ export function PaywallModal() {
               </Button>
 
               <p className="text-xs text-center text-muted-foreground">
-                Pago seguro con Stripe. Cancela cuando quieras.
+                7 dias gratis. Se requiere tarjeta. Cobro automatico despues del trial. Cancela cuando quieras.
               </p>
             </div>
           </>
@@ -207,7 +211,7 @@ export function PaywallModal() {
                 </DialogTitle>
               </div>
               <DialogDescription className="text-muted-foreground text-sm">
-                Plan {currentPlanData.name} - ${currentPlanData.price} MXN/mes
+                Plan {currentPlanData.name} - 7 dias gratis, luego ${currentPlanData.price} MXN/mes
               </DialogDescription>
             </DialogHeader>
 
@@ -226,13 +230,17 @@ export function PaywallModal() {
               <CheckCircle2 className="w-10 h-10 text-success" />
             </div>
             <DialogTitle className="font-serif text-2xl text-foreground">
-              Bienvenido a {selectedPlan === 'pro' ? 'Pro' : 'Basico'}!
+              Tu prueba de 7 dias ha comenzado!
             </DialogTitle>
             <DialogDescription className="text-muted-foreground">
               {selectedPlan === 'pro' 
-                ? 'Tu Mentor Espiritual te espera. Explora todas las filosofias.'
-                : 'Ya tienes acceso a la comunidad y mas decisiones.'
+                ? 'Disfruta de acceso completo al Mentor Espiritual y todas las funciones Pro durante 7 dias.'
+                : 'Disfruta de todas las funciones Basico durante 7 dias.'
               }
+              <br />
+              <span className="text-xs mt-2 block">
+                Tu suscripcion se activara automaticamente el dia 8.
+              </span>
             </DialogDescription>
             <Button 
               className="w-full h-12 mt-4"

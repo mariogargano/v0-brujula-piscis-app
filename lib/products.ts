@@ -7,6 +7,7 @@ export interface SubscriptionProduct {
   features: string[];
   popular?: boolean;
   planType: 'basico' | 'pro';
+  trialDays: number;
 }
 
 // Precios en centavos MXN
@@ -18,7 +19,9 @@ export const SUBSCRIPTION_PRODUCTS: SubscriptionProduct[] = [
     priceInCents: 7900, // $79 MXN/mes
     interval: 'month',
     planType: 'basico',
+    trialDays: 7,
     features: [
+      '7 dias de prueba gratis',
       '10 decisiones al mes',
       '5 rituales desbloqueados',
       'Acceso a la comunidad Piscis',
@@ -33,7 +36,9 @@ export const SUBSCRIPTION_PRODUCTS: SubscriptionProduct[] = [
     interval: 'month',
     planType: 'pro',
     popular: true,
+    trialDays: 7,
     features: [
+      '7 dias de prueba gratis',
       'Decisiones ilimitadas',
       'Todos los rituales',
       'Chat con Mentor Espiritual',

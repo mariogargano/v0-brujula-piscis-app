@@ -17,6 +17,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://brujulapiscis.com'),
   title: 'Brújula Piscis - Guidance & Intuition | Coach de Decisiones para Piscis',
   description: 'Tu coach de decisiones diseñado especialmente para Piscis. Claridad + accion, no prediccion absoluta. Mentor espiritual con Kabbalah, Tarot, Astrologia y mas.',
   generator: 'v0.app',

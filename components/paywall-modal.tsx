@@ -1,6 +1,8 @@
 'use client';
 
 import { useAppStore } from '@/lib/store';
+import { useAuth } from '@/components/auth-provider';
+import { createClient } from '@/lib/supabase/client';
 import {
   Dialog,
   DialogContent,
@@ -57,6 +59,8 @@ const PLAN_PRO = {
 
 export function PaywallModal() {
   const { showPaywall, setShowPaywall, paywallContext, updateUser } = useAppStore();
+  const { user, refreshProfile } = useAuth();
+  const supabase = createClient();
   const [selectedPlan, setSelectedPlan] = useState<SelectedPlan>('pro');
   const [step, setStep] = useState<PaywallStep>('plans');
 
@@ -64,7 +68,22 @@ export function PaywallModal() {
     setStep('checkout');
   };
 
-  const handlePaymentComplete = () => {
+  const handlePaymentComplete = async () => {
+    // Update plan in Supabase
+    if (user) {
+      await supabase
+        .from('profiles')
+        .update({
+          plan: selectedPlan,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+      
+      // Refresh profile to sync
+      await refreshProfile();
+    }
+    
+    // Update local store
     updateUser({ plan: selectedPlan });
     setStep('success');
   };

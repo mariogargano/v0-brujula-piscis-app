@@ -2,6 +2,7 @@
 
 import { stripe } from '@/lib/stripe'
 import { SUBSCRIPTION_PRODUCTS } from '@/lib/products'
+import { createClient } from '@/lib/supabase/server'
 
 export async function createCheckoutSession(productId: string) {
   const product = SUBSCRIPTION_PRODUCTS.find((p) => p.id === productId)
@@ -53,5 +54,38 @@ export async function getCheckoutSessionStatus(sessionId: string) {
     status: session.status,
     customerEmail: session.customer_details?.email,
     subscriptionId: session.subscription as string | null,
+    customerId: session.customer as string | null,
   }
+}
+
+export async function saveSubscriptionToDatabase(data: {
+  userId: string;
+  plan: 'basico' | 'pro';
+  stripeCustomerId: string | null;
+  stripeSubscriptionId: string | null;
+}) {
+  const supabase = await createClient();
+  
+  // Calculate trial end date (7 days from now)
+  const trialEndsAt = new Date();
+  trialEndsAt.setDate(trialEndsAt.getDate() + 7);
+  
+  const { error } = await supabase
+    .from('profiles')
+    .update({
+      plan: data.plan,
+      stripe_customer_id: data.stripeCustomerId,
+      stripe_subscription_id: data.stripeSubscriptionId,
+      subscription_status: 'trialing',
+      trial_ends_at: trialEndsAt.toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', data.userId);
+  
+  if (error) {
+    console.error('Error saving subscription:', error);
+    throw new Error('Failed to save subscription');
+  }
+  
+  return { success: true };
 }

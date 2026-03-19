@@ -57,7 +57,8 @@ export function DecisionScreen() {
   const [checkedQuestions, setCheckedQuestions] = useState<number[]>([]);
   const [copied, setCopied] = useState(false);
   
-  const isPro = user?.plan !== 'free';
+  const isPro = user?.plan === 'pro';
+  const isBasico = user?.plan === 'basico';
   
   const steps: WizardStep[] = ['category', 'text', 'context', 'goal', 'result'];
   const currentStepIndex = steps.indexOf(step);

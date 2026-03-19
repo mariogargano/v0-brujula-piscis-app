@@ -61,7 +61,7 @@ export function HomeScreen() {
   const pulse = getDailyPulse();
   const semaforo = getDailySemaforo();
   const anchor = getDailyAnchor();
-  const isPro = user?.plan !== 'free';
+  const hasPaidPlan = user?.plan !== 'free'; // basico or pro
   
   const handleDecisionClick = () => {
     setActiveTab('decidir');
@@ -91,7 +91,7 @@ export function HomeScreen() {
             </p>
           </div>
         </div>
-        {!isPro && (
+        {!hasPaidPlan && (
           <button 
             onClick={handleUpgradeClick}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium"

@@ -5,12 +5,14 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useAppStore, createUserFromOnboarding } from '@/lib/store';
+import { useAuth } from '@/components/auth-provider';
+import { createClient } from '@/lib/supabase/client';
 import type { Objective, GuideTone, Plan } from '@/lib/types';
 import { StarField } from '@/components/pisces-symbol';
 import { Logo } from '@/components/logo';
 import { CategoryCard } from '@/components/emotion-chip';
 import { Switch } from '@/components/ui/switch';
-import { ChevronRight, Crown, Infinity, Bell, BarChart3, Sparkles } from 'lucide-react';
+import { ChevronRight, Crown, Infinity, Bell, BarChart3, Sparkles, Compass, Users } from 'lucide-react';
 
 // Onboarding solo para Piscis - sin seleccion de signo
 const STEPS = [
@@ -25,7 +27,10 @@ type Step = typeof STEPS[number];
 
 export function Onboarding() {
   const { setShowOnboarding, setUser } = useAppStore();
+  const { user: authUser, refreshProfile } = useAuth();
+  const supabase = createClient();
   const [currentStep, setCurrentStep] = useState<Step>('welcome');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Preferences
   const [objetivo, setObjetivo] = useState<Objective>('amor');
@@ -50,19 +55,56 @@ export function Onboarding() {
     }
   };
 
-  const handleComplete = (plan: Plan) => {
-    const user = createUserFromOnboarding({
-      objetivo,
-      tono,
-      checkIn,
-      pausa,
-      fechaNacimiento: fechaNacimiento || undefined,
-      horaNacimiento: horaNacimiento || undefined,
-      ciudad: ciudad || undefined,
-      plan,
-    });
-    setUser(user);
-    setShowOnboarding(false);
+  const handleComplete = async (plan: Plan) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    
+    try {
+      // Save to Supabase if user is authenticated
+      if (authUser) {
+        await supabase
+          .from('profiles')
+          .update({
+            nombre: 'Piscis', // Default name, can be changed in profile
+            fecha_nacimiento: fechaNacimiento || null,
+            hora_nacimiento: horaNacimiento || null,
+            ciudad: ciudad || null,
+            plan: plan,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', authUser.id);
+        
+        // Refresh the profile to get updated data
+        await refreshProfile();
+      }
+      
+      // Also update local store
+      const user = createUserFromOnboarding({
+        objetivo,
+        tono,
+        checkIn,
+        pausa,
+        fechaNacimiento: fechaNacimiento || undefined,
+        horaNacimiento: horaNacimiento || undefined,
+        ciudad: ciudad || undefined,
+        plan,
+      });
+      setUser(user);
+      setShowOnboarding(false);
+    } catch (error) {
+      // Still complete onboarding even if DB save fails
+      const user = createUserFromOnboarding({
+        objetivo,
+        tono,
+        checkIn,
+        pausa,
+        plan,
+      });
+      setUser(user);
+      setShowOnboarding(false);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -378,13 +420,19 @@ function RemindersStep({
 }
 
 function PaywallStep({ onComplete }: { onComplete: (plan: Plan) => void }) {
-  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
+  const [selectedPlan, setSelectedPlan] = useState<'basico' | 'pro'>('pro');
   
-  const FEATURES = [
+  const BASICO_FEATURES = [
+    { icon: Compass, label: '10 decisiones al mes' },
+    { icon: Sparkles, label: '5 rituales desbloqueados' },
+    { icon: Users, label: 'Acceso a la comunidad' },
+  ];
+  
+  const PRO_FEATURES = [
     { icon: Infinity, label: 'Decisiones ilimitadas' },
-    { icon: Bell, label: 'Recordatorios personalizados' },
-    { icon: BarChart3, label: 'Reportes semanales' },
     { icon: Sparkles, label: 'Todos los rituales' },
+    { icon: Bell, label: 'Chat con Mentor Espiritual' },
+    { icon: BarChart3, label: 'Reportes semanales' },
   ];
 
   return (
@@ -394,63 +442,86 @@ function PaywallStep({ onComplete }: { onComplete: (plan: Plan) => void }) {
           <Crown className="w-8 h-8 text-primary" />
         </div>
         <h2 className="font-serif text-2xl font-bold text-foreground mb-2">
-          Desbloquea tu claridad completa
+          7 dias gratis para probar
         </h2>
         <p className="text-muted-foreground">
-          Decisiones ilimitadas + reportes semanales
+          Elige tu plan. Se cobra despues del trial.
         </p>
       </div>
       
-      <div className="space-y-3 mb-6">
-        {FEATURES.map((feature) => (
-          <div key={feature.label} className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-              <feature.icon className="w-4 h-4 text-primary" />
-            </div>
-            <span className="text-foreground">{feature.label}</span>
-          </div>
-        ))}
-      </div>
-      
-      <div className="grid grid-cols-2 gap-3 mb-6">
+      <div className="grid grid-cols-1 gap-3 mb-6">
+        {/* Basico */}
         <button
-          onClick={() => setSelectedPlan('monthly')}
+          onClick={() => setSelectedPlan('basico')}
           className={cn(
             'p-4 rounded-xl border text-left transition-all',
-            selectedPlan === 'monthly'
+            selectedPlan === 'basico'
               ? 'border-primary bg-primary/10'
               : 'border-border bg-muted/30 hover:border-primary/50'
           )}
         >
-          <div className="font-semibold text-foreground">Mensual</div>
-          <div className="text-2xl font-bold text-foreground mt-1">$99</div>
-          <div className="text-xs text-muted-foreground">MXN/mes</div>
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <div className="font-semibold text-foreground">Basico</div>
+              <div className="text-xs text-muted-foreground">Para empezar</div>
+            </div>
+            <div className="text-right">
+              <div className="text-xl font-bold text-foreground">$79</div>
+              <div className="text-xs text-muted-foreground">MXN/mes</div>
+            </div>
+          </div>
+          <div className="space-y-1">
+            {BASICO_FEATURES.map((f) => (
+              <div key={f.label} className="flex items-center gap-2 text-sm text-muted-foreground">
+                <f.icon className="w-3 h-3" />
+                <span>{f.label}</span>
+              </div>
+            ))}
+          </div>
         </button>
         
+        {/* Pro */}
         <button
-          onClick={() => setSelectedPlan('annual')}
+          onClick={() => setSelectedPlan('pro')}
           className={cn(
             'p-4 rounded-xl border text-left transition-all relative',
-            selectedPlan === 'annual'
+            selectedPlan === 'pro'
               ? 'border-primary bg-primary/10'
               : 'border-border bg-muted/30 hover:border-primary/50'
           )}
         >
           <div className="absolute -top-2 right-2 bg-primary text-primary-foreground text-xs px-2 py-0.5 rounded-full font-medium">
-            -40%
+            Recomendado
           </div>
-          <div className="font-semibold text-foreground">Anual</div>
-          <div className="text-2xl font-bold text-foreground mt-1">$59</div>
-          <div className="text-xs text-muted-foreground">MXN/mes</div>
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <div className="font-semibold text-foreground flex items-center gap-1">
+                Pro <Sparkles className="w-3 h-3 text-primary" />
+              </div>
+              <div className="text-xs text-muted-foreground">Experiencia completa</div>
+            </div>
+            <div className="text-right">
+              <div className="text-xl font-bold text-foreground">$149</div>
+              <div className="text-xs text-muted-foreground">MXN/mes</div>
+            </div>
+          </div>
+          <div className="space-y-1">
+            {PRO_FEATURES.map((f) => (
+              <div key={f.label} className="flex items-center gap-2 text-sm text-muted-foreground">
+                <f.icon className="w-3 h-3" />
+                <span>{f.label}</span>
+              </div>
+            ))}
+          </div>
         </button>
       </div>
       
       <div className="space-y-3">
         <Button 
           className="w-full h-12 text-base font-semibold"
-          onClick={() => onComplete(selectedPlan === 'annual' ? 'pro_annual' : 'pro_monthly')}
+          onClick={() => onComplete(selectedPlan)}
         >
-          Probar Pro 7 dias gratis
+          Empezar 7 dias gratis
         </Button>
         
         <Button 
@@ -458,12 +529,12 @@ function PaywallStep({ onComplete }: { onComplete: (plan: Plan) => void }) {
           className="w-full text-muted-foreground hover:text-foreground"
           onClick={() => onComplete('free')}
         >
-          Continuar gratis
+          Continuar gratis (1 decision/semana)
         </Button>
       </div>
       
       <p className="text-xs text-center text-muted-foreground mt-4">
-        Cancela cuando quieras. Sin compromisos.
+        7 dias gratis. Se requiere tarjeta. Cancela cuando quieras.
       </p>
     </div>
   );

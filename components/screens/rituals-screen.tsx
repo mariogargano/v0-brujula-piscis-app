@@ -21,7 +21,8 @@ import {
 export function RitualsScreen() {
   const { rituals, user, favoriteRituals, toggleFavoriteRitual, setShowPaywall, setPaywallContext } = useAppStore();
   const [selectedRitual, setSelectedRitual] = useState<Ritual | null>(null);
-  const isPro = user?.plan !== 'free';
+  const isPro = user?.plan === 'pro';
+  const hasPaidPlan = user?.plan !== 'free'; // basico or pro
   
   const freeRituals = rituals.filter(r => !r.esPro);
   const proRituals = rituals.filter(r => r.esPro);
@@ -105,10 +106,10 @@ export function RitualsScreen() {
             </div>
             <div className="flex-1">
               <h3 className="font-semibold text-foreground">
-                Desbloquea todos los rituales
+                {hasPaidPlan ? 'Actualiza a Pro' : 'Desbloquea todos los rituales'}
               </h3>
               <p className="text-sm text-muted-foreground">
-                Nuevos rituales cada semana
+                {hasPaidPlan ? 'Accede a todos los rituales' : 'Nuevos rituales cada semana'}
               </p>
             </div>
             <Button 

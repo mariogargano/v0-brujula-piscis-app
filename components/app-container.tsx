@@ -2,6 +2,8 @@
 
 import { useEffect } from 'react';
 import { useAppStore } from '@/lib/store';
+import { useAuth } from '@/components/auth-provider';
+import { useSyncProfile } from '@/hooks/use-sync-profile';
 import { BottomNav } from '@/components/bottom-nav';
 import { Onboarding } from '@/components/onboarding';
 import { PaywallModal } from '@/components/paywall-modal';
@@ -15,19 +17,25 @@ import { MentorScreen } from '@/components/screens/mentor-screen';
 import { StarField } from '@/components/pisces-symbol';
 
 export function AppContainer() {
+  const { profile } = useAuth();
   const { 
     showOnboarding, 
     activeTab, 
     initializeApp,
     user,
   } = useAppStore();
+  
+  // Sync Supabase profile with local store
+  useSyncProfile();
 
   useEffect(() => {
     initializeApp();
   }, [initializeApp]);
 
-  // Show onboarding if user hasn't completed it
-  if (showOnboarding || !user?.onboardingCompleto) {
+  // Show onboarding if user hasn't completed it (no name in profile)
+  const needsOnboarding = !profile?.nombre || showOnboarding;
+  
+  if (needsOnboarding) {
     return <Onboarding />;
   }
 

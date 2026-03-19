@@ -164,9 +164,11 @@ function RoomListView({
   user: { plan: string };
 }) {
   const { setPaywallContext, setShowPaywall } = useAppStore();
-  const isPro = user.plan !== 'free';
+  const isPro = user.plan === 'pro';
+  const hasPaidPlan = user.plan !== 'free'; // basico or pro - both have community access
 
   const handleRoomClick = (room: CommunityRoom) => {
+    // Pro rooms require Pro plan, regular rooms available to all paid plans
     if (room.esPro && !isPro) {
       setPaywallContext('Accede a salas exclusivas de la comunidad');
       setShowPaywall(true);

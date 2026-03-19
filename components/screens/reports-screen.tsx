@@ -20,7 +20,7 @@ import {
 
 export function ReportsScreen() {
   const { user, weeklyReports, decisions, setShowPaywall, setPaywallContext } = useAppStore();
-  const isPro = user?.plan !== 'free';
+  const isPro = user?.plan === 'pro'; // Only pro users get reports
   const [selectedReport, setSelectedReport] = useState<'weekly' | 'monthly' | null>(null);
   
   const handleReportClick = (type: 'weekly' | 'monthly') => {

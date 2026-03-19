@@ -69,26 +69,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
-      console.log('[v0] AuthProvider: Getting initial session...');
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.log('[v0] AuthProvider: Error getting session:', error.message);
-        }
-        
-        console.log('[v0] AuthProvider: Session found:', !!session);
+        const { data: { session } } = await supabase.auth.getSession();
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          console.log('[v0] AuthProvider: Fetching profile for user:', session.user.id);
           await fetchProfile(session.user.id);
         }
       } catch (err) {
-        console.log('[v0] AuthProvider: Exception:', err);
+        // Silent fail - user will be redirected to login
       } finally {
-        console.log('[v0] AuthProvider: Setting loading to false');
         setLoading(false);
       }
     };
@@ -98,18 +89,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('[v0] AuthProvider: Auth state changed:', event, !!session);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          console.log('[v0] AuthProvider: Fetching profile after auth change');
           await fetchProfile(session.user.id);
         } else {
           setProfile(null);
         }
         
-        // Set loading false when we get an auth event
         setLoading(false);
         
         if (event === 'SIGNED_OUT') {

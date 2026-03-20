@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@/lib/supabase/server';
 
 // Daily inspirational messages for Pisces
 const DAILY_MESSAGES = [
@@ -45,49 +46,124 @@ function getDailyMessage(): string {
   return DAILY_MESSAGES[messageIndex];
 }
 
-// This endpoint would be called by a Vercel Cron Job
-// Configure in vercel.json: { "crons": [{ "path": "/api/whatsapp/send-daily", "schedule": "0 * * * *" }] }
+// Send WhatsApp message via Twilio
+async function sendWhatsAppMessage(to: string, message: string): Promise<boolean> {
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  const fromNumber = process.env.TWILIO_WHATSAPP_NUMBER;
+
+  if (!accountSid || !authToken || !fromNumber) {
+    console.error('Twilio credentials not configured');
+    return false;
+  }
+
+  // Format phone number for WhatsApp
+  const formattedTo = to.startsWith('+') ? to : `+${to}`;
+  const formattedFrom = fromNumber.startsWith('+') ? fromNumber : `+${fromNumber}`;
+  
+  const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`;
+  
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Basic ' + Buffer.from(`${accountSid}:${authToken}`).toString('base64'),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        From: `whatsapp:${formattedFrom}`,
+        To: `whatsapp:${formattedTo}`,
+        Body: message,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error(`Twilio error for ${formattedTo}:`, error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error(`Error sending to ${formattedTo}:`, error);
+    return false;
+  }
+}
+
+// This endpoint is called by Vercel Cron Job
 export async function GET(request: NextRequest) {
   try {
     // Verify this is a legitimate cron request
     const authHeader = request.headers.get('authorization');
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      // In development, allow without auth
       if (process.env.NODE_ENV === 'production') {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
     }
 
-    const currentHour = new Date().toISOString().slice(11, 16); // "HH:MM" format
-    const message = getDailyMessage();
-
-    // In production, you would:
-    // 1. Query database for all subscriptions with matching time
-    // 2. Send messages via Twilio WhatsApp API or WhatsApp Business API
+    const supabase = await createClient();
     
-    // Example Twilio integration:
-    // const twilio = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-    // for (const subscription of subscriptionsToSend) {
-    //   await twilio.messages.create({
-    //     body: message,
-    //     from: 'whatsapp:+14155238886', // Your Twilio WhatsApp number
-    //     to: `whatsapp:${subscription.phone}`,
-    //   });
-    // }
+    // Get current hour in Mexico City timezone
+    const now = new Date();
+    const mexicoTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Mexico_City' }));
+    const currentHour = mexicoTime.getHours().toString().padStart(2, '0') + ':00';
 
-    console.log('[v0] Daily message ready to send:', {
-      time: currentHour,
-      message: message.substring(0, 50) + '...',
-    });
+    // Get all users with WhatsApp notifications enabled for this hour
+    const { data: users, error } = await supabase
+      .from('profiles')
+      .select('id, whatsapp, nombre')
+      .eq('whatsapp_notificaciones', true)
+      .eq('hora_notificacion', currentHour)
+      .not('whatsapp', 'is', null);
+
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json({ error: 'Database error' }, { status: 500 });
+    }
+
+    if (!users || users.length === 0) {
+      return NextResponse.json({
+        success: true,
+        message: 'No users to notify at this hour',
+        hour: currentHour,
+        sent: 0,
+      });
+    }
+
+    const message = getDailyMessage();
+    let sentCount = 0;
+    let failedCount = 0;
+
+    // Send messages to all users
+    for (const user of users) {
+      if (!user.whatsapp) continue;
+      
+      const personalizedMessage = user.nombre 
+        ? message.replace('Piscis', user.nombre)
+        : message;
+      
+      const fullMessage = `${personalizedMessage}\n\n— Tu Brujula Piscis`;
+      
+      const success = await sendWhatsAppMessage(user.whatsapp, fullMessage);
+      if (success) {
+        sentCount++;
+      } else {
+        failedCount++;
+      }
+      
+      // Small delay to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
 
     return NextResponse.json({
       success: true,
-      time: currentHour,
-      messagePreview: message.substring(0, 100) + '...',
-      // In production: sentCount: subscriptionsToSend.length
+      hour: currentHour,
+      sent: sentCount,
+      failed: failedCount,
+      total: users.length,
     });
   } catch (error) {
-    console.error('[v0] Error sending daily messages:', error);
+    console.error('Error sending daily messages:', error);
     return NextResponse.json(
       { error: 'Error sending messages' },
       { status: 500 }
@@ -99,7 +175,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { phone } = body;
+    const { phone, testMessage } = body;
 
     if (!phone) {
       return NextResponse.json(
@@ -108,26 +184,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const message = getDailyMessage();
+    const message = testMessage || getDailyMessage();
     const formattedPhone = phone.startsWith('+') ? phone : `+52${phone}`;
+    const fullMessage = `${message}\n\n— Tu Brujula Piscis`;
 
-    // In production, send via Twilio:
-    // const twilio = require('twilio')(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
-    // await twilio.messages.create({
-    //   body: message,
-    //   from: 'whatsapp:+14155238886',
-    //   to: `whatsapp:${formattedPhone}`,
-    // });
+    const success = await sendWhatsAppMessage(formattedPhone, fullMessage);
 
-    console.log('[v0] Test message would be sent to:', formattedPhone);
-
-    return NextResponse.json({
-      success: true,
-      phone: formattedPhone,
-      message: message,
-    });
+    if (success) {
+      return NextResponse.json({
+        success: true,
+        phone: formattedPhone,
+        message: 'Message sent successfully',
+      });
+    } else {
+      return NextResponse.json(
+        { error: 'Failed to send message. Check Twilio credentials.' },
+        { status: 500 }
+      );
+    }
   } catch (error) {
-    console.error('[v0] Error sending test message:', error);
+    console.error('Error sending test message:', error);
     return NextResponse.json(
       { error: 'Error sending message' },
       { status: 500 }

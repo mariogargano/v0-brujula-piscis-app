@@ -1,17 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-// In production, this would be stored in a database
-// For now, we'll use Vercel KV or similar
-interface Subscription {
-  phone: string;
-  time: string;
-  userId: string;
-  createdAt: string;
-  active: boolean;
-}
-
-// Mock storage - in production use a database
-const subscriptions: Map<string, Subscription> = new Map();
+import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: NextRequest) {
   try {
@@ -25,37 +13,76 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Usuario no autenticado' },
+        { status: 401 }
+      );
+    }
+
     // Format phone number with country code
     const formattedPhone = phone.startsWith('+') ? phone : `+52${phone}`;
+    const notificationTime = time || '09:00';
 
-    // Store subscription
-    const subscription: Subscription = {
-      phone: formattedPhone,
-      time: time || '09:00',
-      userId: userId || 'anonymous',
-      createdAt: new Date().toISOString(),
-      active: true,
-    };
+    const supabase = await createClient();
 
-    subscriptions.set(formattedPhone, subscription);
+    // Update user profile with WhatsApp settings
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        whatsapp: formattedPhone,
+        whatsapp_notificaciones: true,
+        hora_notificacion: notificationTime,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', userId);
 
-    // In production, you would:
-    // 1. Store in database (Supabase, Neon, etc.)
-    // 2. Send a welcome message via Twilio/WhatsApp Business API
-    // 3. Set up the cron job trigger
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json(
+        { error: 'Error al guardar configuracion' },
+        { status: 500 }
+      );
+    }
 
-    console.log('[v0] WhatsApp subscription created:', subscription);
+    // Send welcome message
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const authToken = process.env.TWILIO_AUTH_TOKEN;
+    const fromNumber = process.env.TWILIO_WHATSAPP_NUMBER;
+
+    if (accountSid && authToken && fromNumber) {
+      const formattedFrom = fromNumber.startsWith('+') ? fromNumber : `+${fromNumber}`;
+      const welcomeMessage = `Bienvenido a Brujula Piscis! Recibiras mensajes de inspiracion diaria a las ${notificationTime}. Responde STOP para cancelar en cualquier momento.`;
+      
+      try {
+        await fetch(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`, {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Basic ' + Buffer.from(`${accountSid}:${authToken}`).toString('base64'),
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: new URLSearchParams({
+            From: `whatsapp:${formattedFrom}`,
+            To: `whatsapp:${formattedPhone}`,
+            Body: welcomeMessage,
+          }),
+        });
+      } catch (twilioError) {
+        console.error('Twilio welcome message error:', twilioError);
+        // Don't fail the subscription if welcome message fails
+      }
+    }
 
     return NextResponse.json({
       success: true,
       message: 'Suscripcion creada exitosamente',
       subscription: {
         phone: formattedPhone,
-        time: subscription.time,
+        time: notificationTime,
       },
     });
   } catch (error) {
-    console.error('[v0] Error creating subscription:', error);
+    console.error('Error creating subscription:', error);
     return NextResponse.json(
       { error: 'Error al crear suscripcion' },
       { status: 500 }
@@ -66,21 +93,32 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const phone = searchParams.get('phone');
+    const userId = searchParams.get('userId');
 
-    if (!phone) {
+    if (!userId) {
       return NextResponse.json(
-        { error: 'Numero de telefono requerido' },
-        { status: 400 }
+        { error: 'Usuario no autenticado' },
+        { status: 401 }
       );
     }
 
-    const formattedPhone = phone.startsWith('+') ? phone : `+52${phone}`;
-    
-    const subscription = subscriptions.get(formattedPhone);
-    if (subscription) {
-      subscription.active = false;
-      subscriptions.set(formattedPhone, subscription);
+    const supabase = await createClient();
+
+    // Disable WhatsApp notifications
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        whatsapp_notificaciones: false,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', userId);
+
+    if (error) {
+      console.error('Database error:', error);
+      return NextResponse.json(
+        { error: 'Error al cancelar suscripcion' },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
@@ -88,7 +126,7 @@ export async function DELETE(request: NextRequest) {
       message: 'Suscripcion cancelada',
     });
   } catch (error) {
-    console.error('[v0] Error canceling subscription:', error);
+    console.error('Error canceling subscription:', error);
     return NextResponse.json(
       { error: 'Error al cancelar suscripcion' },
       { status: 500 }

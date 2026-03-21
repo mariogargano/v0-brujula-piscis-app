@@ -69,36 +69,6 @@ export async function signInWithGoogle() {
   }
 }
 
-export async function signInWithPhone(phone: string) {
-  const supabase = await createClient();
-
-  const { error } = await supabase.auth.signInWithOtp({
-    phone,
-  });
-
-  if (error) {
-    return { error: error.message };
-  }
-
-  return { success: true, message: 'Codigo enviado a tu telefono' };
-}
-
-export async function verifyPhoneOtp(phone: string, token: string) {
-  const supabase = await createClient();
-
-  const { error } = await supabase.auth.verifyOtp({
-    phone,
-    token,
-    type: 'sms',
-  });
-
-  if (error) {
-    return { error: error.message };
-  }
-
-  redirect('/');
-}
-
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();

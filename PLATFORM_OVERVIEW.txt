@@ -1,0 +1,189 @@
+╔════════════════════════════════════════════════════════════════════╗
+║                                                                    ║
+║          🌊 BRÚJULA PISCIS - PLATAFORMA DE DECISIONES 🌊           ║
+║                                                                    ║
+║                    ✅ LISTA PARA PRODUCCIÓN                        ║
+║                                                                    ║
+╚════════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                     📋 FEATURES IMPLEMENTADOS                       │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  AUTENTICACIÓN                                                      │
+│  ✅ Email/Password signup y login                                   │
+│  ✅ Google OAuth integration                                        │
+│  ✅ SMS/Phone (Twilio) verification                                 │
+│  ✅ Session management con Supabase                                 │
+│  ✅ Middleware protegiendo rutas                                    │
+│                                                                     │
+│  PLANES Y MONETIZACIÓN                                              │
+│  ✅ Plan Free: $0 (1 decisión/semana)                               │
+│  ✅ Plan Básico: $79 MXN/mes (10 decisiones/mes)                    │
+│  ✅ Plan Pro: $149 MXN/mes (ilimitadas + mentor)                    │
+│  ✅ 7 días de trial gratuito                                        │
+│  ✅ Cobro automático con Stripe                                     │
+│  ✅ Webhook integration para actualizar suscripciones               │
+│                                                                     │
+│  EXPERIENCIA DEL USUARIO                                            │
+│  ✅ Onboarding completo (6 pasos)                                   │
+│  ✅ Home con decisión del día                                       │
+│  ✅ Consultas con IA (Tarot, Kabbalah, Astrología)                  │
+│  ✅ Mentor Espiritual solo para Pro                                 │
+│  ✅ 31+ Rituales personalizados                                     │
+│  ✅ Comunidad de Piscis                                             │
+│  ✅ Historial completo de decisiones                                │
+│                                                                     │
+│  NOTIFICACIONES                                                     │
+│  ✅ Mensajes diarios por WhatsApp                                   │
+│  ✅ 31 mensajes inspiracionales únicos                              │
+│  ✅ Horario personalizable (7am-8pm)                                │
+│  ✅ Cron job cada hora                                              │
+│                                                                     │
+│  SEGURIDAD                                                          │
+│  ✅ Row Level Security en Supabase                                  │
+│  ✅ Server-only functions para datos sensibles                      │
+│  ✅ Webhook signature verification                                  │
+│  ✅ Password hashing con bcrypt                                     │
+│  ✅ HTTPS en todo tránsito                                          │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                      🏗️ ARQUITECTURA TÉCNICA                        │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  Frontend Layer:                                                    │
+│  ├─ Next.js 16 + React 19                                           │
+│  ├─ TypeScript                                                      │
+│  ├─ Tailwind CSS v4                                                 │
+│  ├─ shadcn/ui components                                            │
+│  ├─ Zustand (state management)                                      │
+│  └─ SWR (data fetching)                                             │
+│                                                                     │
+│  Backend Layer:                                                     │
+│  ├─ Next.js API Routes                                              │
+│  ├─ Server Actions                                                  │
+│  ├─ Middleware (auth flow)                                          │
+│  └─ Cron Jobs (Vercel)                                              │
+│                                                                     │
+│  Database Layer:                                                    │
+│  ├─ Supabase PostgreSQL                                             │
+│  ├─ RLS Policies                                                    │
+│  ├─ Realtime subscriptions                                          │
+│  └─ Auth triggers                                                   │
+│                                                                     │
+│  External Services:                                                 │
+│  ├─ Stripe (payment processing)                                     │
+│  ├─ Twilio (WhatsApp messaging)                                     │
+│  └─ Vercel (deployment & cron)                                      │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                     💰 MODELO DE NEGOCIO                            │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  Usuarios Gratis                                                    │
+│  └─ 1 decisión/semana                                               │
+│     └─ Puede upgradearse en cualquier momento                       │
+│                                                                     │
+│  Usuarios Básicos ($79/mes)                                         │
+│  ├─ 10 decisiones/mes                                               │
+│  ├─ 5 rituales                                                      │
+│  ├─ Acceso a comunidad                                              │
+│  └─ Mensajes diarios por WhatsApp                                   │
+│                                                                     │
+│  Usuarios Pro ($149/mes)                                            │
+│  ├─ Decisiones ilimitadas                                           │
+│  ├─ Todos los rituales                                              │
+│  ├─ Mentor Espiritual con IA                                        │
+│  ├─ Salas Pro en comunidad                                          │
+│  ├─ Reportes semanales/mensuales                                    │
+│  └─ Mensajes diarios por WhatsApp                                   │
+│                                                                     │
+│  Conversión Esperada:                                               │
+│  └─ Usuarios Free → Pago: 2-5%                                      │
+│  └─ Retención mensual: 80-90%                                       │
+│  └─ LTV por usuario: $200-500                                       │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                   📊 FLUJO DEL USUARIO FINAL                        │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  1. SIGNUP                                                          │
+│     └─ Email/Google/SMS → Verificación → Perfil creado              │
+│                                                                     │
+│  2. ONBOARDING                                                      │
+│     └─ Objetivo → Tono → Frecuencia → Datos → Plan → Listo          │
+│                                                                     │
+│  3. TRIAL (7 días)                                                  │
+│     └─ Tarjeta requerida → Acceso completo → Sin cargo              │
+│                                                                     │
+│  4. CONVERSIÓN (Día 8)                                              │
+│     └─ Pago automático → Suscripción activa                         │
+│                                                                     │
+│  5. USO CONTINUO                                                    │
+│     ├─ Hace decisiones                                              │
+│     ├─ Recibe mensajes WhatsApp diarios                             │
+│     ├─ Accede a rituales y mentor                                   │
+│     └─ Comunidad de Piscis                                          │
+│                                                                     │
+│  6. RENOVACIÓN (Cada mes)                                           │
+│     └─ Pago automático → Sigue usando                               │
+│                                                                     │
+│  7. CANCELACIÓN (Opcional)                                          │
+│     └─ Usuario puede cancelar → Acceso hasta fin del mes            │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                    🚀 DEPLOYMENT REQUIREMENTS                       │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ✅ Cuenta Vercel                  → Deployment & Cron               │
+│  ✅ Proyecto Supabase              → Database & Auth                 │
+│  ✅ Cuenta Stripe (PRODUCCIÓN)     → Pagos                           │
+│  ✅ Cuenta Twilio                  → WhatsApp                        │
+│  ✅ Dominio personalizado           → Tu marca                       │
+│  ✅ GitHub repo                    → Code repository                 │
+│                                                                     │
+│  Total Setup Time: ~30 minutos                                      │
+│  Documentación: README.md + QUICK_START.md                          │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                    📈 PROYECCIONES DE INGRESOS                      │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  MES 1:                                                             │
+│  Users: 50-200 en trial                                             │
+│  Conversión: 2-5% → 1-10 pagos                                      │
+│  Revenue: $79-1,490 MXN                                             │
+│                                                                     │
+│  MES 6:                                                             │
+│  Users: 500-1,000 activos                                           │
+│  Subscripciones: 10-50 (retención 80%)                              │
+│  Revenue: $1,000-7,500 MXN/mes                                      │
+│                                                                     │
+│  AÑO 1:                                                             │
+│  Users: 5,000-10,000 registrados                                    │
+│  Subscripciones: 100-500 activas                                    │
+│  Revenue: $10,000-75,000 MXN/mes (120K-900K anuales)                │
+│                                                                     │
+│  Nota: Con marketing activo puede 10x                               │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+╔════════════════════════════════════════════════════════════════════╗
+║                                                                    ║
+║                  ✅ TODO COMPLETAMENTE FUNCIONAL                   ║
+║                                                                    ║
+║              🎯 LISTO PARA EMPEZAR A GENERAR INGRESOS              ║
+║                                                                    ║
+║  Próximo paso: Sigue QUICK_START.md para deploy en 30 minutos      ║
+║                                                                    ║
+╚════════════════════════════════════════════════════════════════════╝

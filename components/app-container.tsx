@@ -32,8 +32,11 @@ export function AppContainer() {
     initializeApp();
   }, [initializeApp]);
 
-  // Show onboarding if user hasn't completed it (no name in profile)
-  const needsOnboarding = !profile?.nombre || showOnboarding;
+  // Show onboarding if:
+  // 1. User hasn't completed onboarding (no plan set or still 'free')
+  // 2. Or explicitly showing onboarding
+  const hasPaidPlan = profile?.plan === 'basico' || profile?.plan === 'pro';
+  const needsOnboarding = !hasPaidPlan || showOnboarding;
   
   if (needsOnboarding) {
     return <Onboarding />;

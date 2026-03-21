@@ -18,6 +18,7 @@ interface StripeCheckoutProps {
 
 export function StripeCheckout({ productId, onComplete }: StripeCheckoutProps) {
   const [isLoading, setIsLoading] = useState(true)
+  const [sessionId, setSessionId] = useState<string | null>(null)
   const onCompleteRef = useRef(onComplete)
   
   // Keep the ref updated
@@ -27,6 +28,11 @@ export function StripeCheckout({ productId, onComplete }: StripeCheckoutProps) {
 
   const fetchClientSecret = useCallback(async () => {
     const clientSecret = await createCheckoutSession(productId)
+    // Extract session ID from client secret (format: cs_xxx_secret_xxx)
+    if (clientSecret) {
+      const extractedSessionId = clientSecret.split('_secret_')[0]
+      setSessionId(extractedSessionId)
+    }
     setIsLoading(false)
     return clientSecret
   }, [productId])
@@ -35,9 +41,9 @@ export function StripeCheckout({ productId, onComplete }: StripeCheckoutProps) {
   const options = useMemo(() => ({
     fetchClientSecret,
     onComplete: () => {
-      onCompleteRef.current?.()
+      onCompleteRef.current?.(sessionId || undefined)
     }
-  }), [fetchClientSecret])
+  }), [fetchClientSecret, sessionId])
 
   return (
     <div className="w-full min-h-[400px] relative">

@@ -13,7 +13,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 
 interface StripeCheckoutProps {
   productId: string
-  onComplete?: () => void
+  onComplete?: (sessionId?: string) => void
 }
 
 export function StripeCheckout({ productId, onComplete }: StripeCheckoutProps) {

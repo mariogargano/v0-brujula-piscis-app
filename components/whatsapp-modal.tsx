@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useAppStore } from '@/lib/store';
+import { useAuth } from '@/components/auth-provider';
+import { createClient } from '@/lib/supabase/client';
 import {
   Dialog,
   DialogContent,
@@ -59,21 +61,24 @@ const NOTIFICATION_TIMES = [
 
 export function WhatsAppModal({ open, onOpenChange }: WhatsAppModalProps) {
   const { user, updateUser } = useAppStore();
+  const { user: authUser, profile, refreshProfile } = useAuth();
+  const supabase = createClient();
   
-  const [whatsapp, setWhatsapp] = useState(user?.whatsapp || '');
-  const [notificaciones, setNotificaciones] = useState(user?.whatsappNotificaciones || false);
-  const [horaNotificacion, setHoraNotificacion] = useState(user?.horaNotificacion || '09:00');
+  const [whatsapp, setWhatsapp] = useState(profile?.whatsapp || user?.whatsapp || '');
+  const [notificaciones, setNotificaciones] = useState(profile?.whatsapp_notificaciones || user?.whatsappNotificaciones || false);
+  const [horaNotificacion, setHoraNotificacion] = useState(profile?.hora_notificacion || user?.horaNotificacion || '09:00');
   const [step, setStep] = useState<'form' | 'success'>('form');
   const [currentExample, setCurrentExample] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (open) {
-      setWhatsapp(user?.whatsapp || '');
-      setNotificaciones(user?.whatsappNotificaciones || false);
-      setHoraNotificacion(user?.horaNotificacion || '09:00');
+      setWhatsapp(profile?.whatsapp || user?.whatsapp || '');
+      setNotificaciones(profile?.whatsapp_notificaciones || user?.whatsappNotificaciones || false);
+      setHoraNotificacion(profile?.hora_notificacion || user?.horaNotificacion || '09:00');
       setStep('form');
     }
-  }, [open, user]);
+  }, [open, user, profile]);
 
   // Rotate example messages
   useEffect(() => {
@@ -95,30 +100,53 @@ export function WhatsAppModal({ open, onOpenChange }: WhatsAppModalProps) {
   };
 
   const handleSave = async () => {
-    updateUser({
-      whatsapp: whatsapp,
-      whatsappNotificaciones: notificaciones && whatsapp.length >= 10,
-      horaNotificacion: horaNotificacion,
-    });
+    if (isSaving) return;
+    setIsSaving(true);
+    
+    const isActive = notificaciones && whatsapp.length >= 10;
+    
+    try {
+      // Save to Supabase
+      if (authUser) {
+        await supabase
+          .from('profiles')
+          .update({
+            whatsapp: whatsapp,
+            whatsapp_notificaciones: isActive,
+            hora_notificacion: horaNotificacion,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', authUser.id);
+        
+        await refreshProfile();
+      }
+      
+      // Update local store
+      updateUser({
+        whatsapp: whatsapp,
+        whatsappNotificaciones: isActive,
+        horaNotificacion: horaNotificacion,
+      });
 
-    if (notificaciones && whatsapp.length >= 10) {
-      // Register for notifications
-      try {
+      if (isActive) {
+        // Register for notifications via API
         await fetch('/api/whatsapp/subscribe', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             phone: whatsapp,
             time: horaNotificacion,
-            userId: user?.id,
+            userId: authUser?.id,
           }),
         });
-      } catch (error) {
-        console.error('Error subscribing to WhatsApp:', error);
+        setStep('success');
+      } else {
+        onOpenChange(false);
       }
-      setStep('success');
-    } else {
-      onOpenChange(false);
+    } catch (error) {
+      console.error('Error saving WhatsApp settings:', error);
+    } finally {
+      setIsSaving(false);
     }
   };
 

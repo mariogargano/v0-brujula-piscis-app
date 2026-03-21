@@ -26,6 +26,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { StripeCheckout } from './stripe-checkout';
+import { saveSubscriptionToDatabase, getCheckoutSessionStatus } from '@/app/actions/stripe';
 
 type PaywallStep = 'plans' | 'checkout' | 'success';
 type SelectedPlan = 'basico' | 'pro';
@@ -68,24 +69,40 @@ export function PaywallModal() {
     setStep('checkout');
   };
 
-  const handlePaymentComplete = async () => {
-    // Update plan in Supabase
-    if (user) {
-      await supabase
-        .from('profiles')
-        .update({
-          plan: selectedPlan,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
+  const handlePaymentComplete = async (sessionId?: string) => {
+    try {
+      let stripeCustomerId = null;
+      let stripeSubscriptionId = null;
       
-      // Refresh profile to sync
-      await refreshProfile();
+      // Get Stripe session details if available
+      if (sessionId) {
+        const sessionStatus = await getCheckoutSessionStatus(sessionId);
+        stripeCustomerId = sessionStatus.customerId;
+        stripeSubscriptionId = sessionStatus.subscriptionId;
+      }
+      
+      // Save subscription to database with trial info
+      if (user) {
+        await saveSubscriptionToDatabase({
+          userId: user.id,
+          plan: selectedPlan,
+          stripeCustomerId,
+          stripeSubscriptionId,
+        });
+        
+        // Refresh profile to sync
+        await refreshProfile();
+      }
+      
+      // Update local store
+      updateUser({ plan: selectedPlan });
+      setStep('success');
+    } catch (error) {
+      console.error('Error completing payment:', error);
+      // Still show success - Stripe already processed the payment
+      updateUser({ plan: selectedPlan });
+      setStep('success');
     }
-    
-    // Update local store
-    updateUser({ plan: selectedPlan });
-    setStep('success');
   };
 
   const handleClose = () => {

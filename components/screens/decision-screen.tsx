@@ -84,7 +84,7 @@ export function DecisionScreen() {
     if (step === 'goal') {
       // Check if user can make decision
       if (!canMakeDecision()) {
-        setPaywallContext('Has usado tu decisión gratuita de esta semana. Desbloquea Pro para decisiones ilimitadas.');
+        setPaywallContext('Has usado tus 10 decisiones del mes. Actualiza a Pro para decisiones ilimitadas.');
         setShowPaywall(true);
         return;
       }
@@ -134,7 +134,7 @@ export function DecisionScreen() {
   const handleNewDecision = () => {
     // Check limit again for new decision
     if (!canMakeDecision()) {
-      setPaywallContext('Has usado tu decisión gratuita de esta semana. Desbloquea Pro para decisiones ilimitadas.');
+      setPaywallContext('Has usado tus 10 decisiones del mes. Actualiza a Pro para decisiones ilimitadas.');
       setShowPaywall(true);
       return;
     }

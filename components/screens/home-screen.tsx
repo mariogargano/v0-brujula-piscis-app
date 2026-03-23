@@ -61,14 +61,15 @@ export function HomeScreen() {
   const pulse = getDailyPulse();
   const semaforo = getDailySemaforo();
   const anchor = getDailyAnchor();
-  const hasPaidPlan = user?.plan !== 'free'; // basico or pro
+  const isPro = user?.plan === 'pro';
+  const isBasico = user?.plan === 'basico';
   
   const handleDecisionClick = () => {
     setActiveTab('decidir');
   };
 
   const handleUpgradeClick = () => {
-    setPaywallContext('Desbloquea decisiones ilimitadas para nunca quedarte sin claridad');
+    setPaywallContext('Actualiza a Pro para decisiones ilimitadas y Mentor Espiritual');
     setShowPaywall(true);
   };
 
@@ -91,7 +92,7 @@ export function HomeScreen() {
             </p>
           </div>
         </div>
-        {!hasPaidPlan && (
+        {isBasico && (
           <button 
             onClick={handleUpgradeClick}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium"
@@ -243,39 +244,7 @@ export function HomeScreen() {
       </PiscisCard>
 
       {/* Plan actual */}
-      {user?.plan === 'free' && (
-        <PiscisCard variant="default" padding="lg">
-          <PiscisCardHeader title="Mejora tu experiencia" />
-          <div className="mt-4 space-y-3">
-            <div className="p-3 rounded-lg bg-muted/30 border border-border">
-              <div className="flex justify-between items-center mb-2">
-                <span className="font-medium text-foreground">Basico</span>
-                <span className="text-primary font-bold">$79/mes</span>
-              </div>
-              <p className="text-xs text-muted-foreground">10 decisiones + Comunidad</p>
-            </div>
-            <div className="p-3 rounded-lg bg-primary/5 border border-primary/30">
-              <div className="flex justify-between items-center mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-foreground">Pro</span>
-                  <Crown className="w-4 h-4 text-primary" />
-                </div>
-                <span className="text-primary font-bold">$149/mes</span>
-              </div>
-              <p className="text-xs text-muted-foreground">Ilimitado + Mentor Espiritual + Reportes</p>
-            </div>
-          </div>
-          <Button 
-            className="w-full mt-4"
-            onClick={handleUpgradeClick}
-          >
-            Ver planes
-            <ChevronRight className="w-4 h-4 ml-1" />
-          </Button>
-        </PiscisCard>
-      )}
-      
-      {user?.plan === 'basico' && (
+      {isBasico && (
         <PiscisCard variant="default" padding="lg" className="border-primary/30">
           <div className="flex items-center justify-between">
             <div>
@@ -293,7 +262,7 @@ export function HomeScreen() {
         </PiscisCard>
       )}
       
-      {user?.plan === 'pro' && (
+      {isPro && (
         <PiscisCard variant="glow" padding="lg" className="border-primary/30">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">

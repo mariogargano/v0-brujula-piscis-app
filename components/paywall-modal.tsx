@@ -131,7 +131,7 @@ export function PaywallModal() {
                 <Crown className="w-8 h-8 text-primary" />
               </div>
               <DialogTitle className="font-serif text-2xl text-foreground">
-                Elige tu plan Piscis
+                Actualiza tu plan
               </DialogTitle>
               <DialogDescription className="text-muted-foreground">
                 {paywallContext || 'Desbloquea todo el poder de Brujula Piscis'}
@@ -212,7 +212,7 @@ export function PaywallModal() {
                 className="w-full h-12 text-base font-semibold"
                 onClick={handleProceedToCheckout}
               >
-                Empezar 7 dias gratis
+                Actualizar a {selectedPlan === 'pro' ? 'Pro' : 'Basico'}
               </Button>
               
               <Button 
@@ -220,11 +220,11 @@ export function PaywallModal() {
                 className="w-full text-muted-foreground hover:text-foreground"
                 onClick={handleClose}
               >
-                Continuar gratis
+                Ahora no
               </Button>
 
               <p className="text-xs text-center text-muted-foreground">
-                7 dias gratis. Se requiere tarjeta. Cobro automatico despues del trial. Cancela cuando quieras.
+                Pago seguro con Stripe. Cancela cuando quieras.
               </p>
             </div>
           </>

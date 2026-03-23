@@ -133,8 +133,8 @@ export const useAppStore = create<AppState>()(
           return true;
         }
         
-        // Set limits based on plan
-        const limit = state.user.plan === 'basico' ? 10 : 1; // basico = 10/month, free = 1/week
+        // Basico has 10 decisions per month
+        const limit = 10;
         return state.user.decisionesUsadasEstaSemana < limit;
       },
       

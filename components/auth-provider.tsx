@@ -13,11 +13,16 @@ type Profile = {
   hora_nacimiento: string | null;
   ciudad: string | null;
   plan: string;
-  decisiones_usadas_semana: number;
+  decisiones_usadas_esta_semana: number;
   ultimo_reset_semanal: string | null;
   whatsapp: string | null;
   whatsapp_notificaciones: boolean;
   hora_notificacion: string | null;
+  en_comunidad: boolean;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  subscription_status: string | null;
+  trial_ends_at: string | null;
   created_at: string;
   updated_at: string;
 };

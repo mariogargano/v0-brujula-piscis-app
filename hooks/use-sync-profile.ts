@@ -27,7 +27,7 @@ export function useSyncProfile() {
         horaNacimiento: profile.hora_nacimiento || undefined,
         ciudad: profile.ciudad || undefined,
         plan: (profile.plan as Plan) || 'free',
-        decisionesUsadasEstaSemana: profile.decisiones_usadas_esta_semana || 0,
+        decisionesUsadasEstaSemana: profile.decisiones_usadas_esta_semana ?? 0,
         ultimoResetSemanal: profile.ultimo_reset_semanal || new Date().toISOString(),
         onboardingCompleto: !!profile.nombre, // Consider onboarding complete if they have a name
         enComunidad: profile.en_comunidad || false,
